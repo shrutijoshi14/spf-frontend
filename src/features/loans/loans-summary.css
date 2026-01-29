@@ -1,0 +1,90 @@
+.loan-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+/* BASE CARD */
+.summary-card {
+  position: relative;
+  padding: 22px 20px;
+  border-radius: 18px;
+  color: #ffffff; /* ✅ REQUIRED */
+  text-align: center;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* SUBTLE SHINE OVERLAY */
+.summary-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.summary-card:hover::after {
+  opacity: 1;
+}
+
+/* TEXT */
+.summary-card h4 {
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.9;
+  margin-bottom: 6px;
+  letter-spacing: 0.4px;
+  color: white;
+}
+
+.summary-card h2 {
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ICON */
+.card-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));
+}
+
+/* HOVER EFFECT */
+.summary-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.3);
+}
+
+/* GRADIENT THEMES */
+.gradient-purple {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.gradient-gray {
+  background: linear-gradient(135deg, #64748b, #475569);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, #fb923c, #f97316);
+}
+
+/* MOBILE TWEAK */
+@media (max-width: 480px) {
+  .summary-card h2 {
+    font-size: 24px;
+  }
+
+  .card-icon {
+    font-size: 30px;
+  }
+}

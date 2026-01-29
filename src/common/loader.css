@@ -1,0 +1,74 @@
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  width: 100%;
+  height: 100%;
+}
+
+.loader-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Logo styling */
+/* Light Mode (Default) - Invert colors so White becomes Black, but keep Yellowish tone */
+.loader-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  z-index: 2;
+  animation: pulse 2s infinite ease-in-out;
+  /* Invert makes white->black. Hue-rotate 180 tries to bring colors back to original spectrum (e.g. Blue->Yellow) */
+  filter: invert(1) hue-rotate(180deg) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Dark Mode - Restore original (White & Yellow) colors */
+[data-theme='dark'] .loader-logo {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* Spinner ring */
+.loader-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 3px solid transparent;
+  border-top-color: #6366f1; /* Purple */
+  border-right-color: #ec4899; /* Pink/Rose highlight */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Keyframes */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}

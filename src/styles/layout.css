@@ -1,0 +1,189 @@
+/* Root variables */
+:root {
+  --sidebar-open: 230px;
+  --sidebar-collapsed: 70px;
+  --transition-speed: 0.3s;
+}
+
+/* Main layout wrapper */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--bg-app);
+  transition: background 0.3s ease;
+}
+
+/* Sidebar + page wrapper */
+.page-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0;
+}
+
+/* Sidebar open/closed effect */
+.page-wrapper.open {
+  margin-left: var(--sidebar-open);
+}
+
+.page-wrapper.collapsed {
+  margin-left: var(--sidebar-collapsed);
+}
+
+/* Sidebar open */
+.page-wrapper.open .topbar {
+  width: calc(100% - var(--sidebar-open));
+  margin-left: var(--sidebar-open);
+}
+
+/* Sidebar collapsed */
+.page-wrapper.collapsed .topbar {
+  width: calc(100% - var(--sidebar-collapsed));
+  margin-left: var(--sidebar-collapsed);
+}
+
+/* Mobile: header always full width */
+@media (max-width: 768px) {
+  .topbar {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+}
+
+/* Topbar space + main content */
+.content-area {
+  padding: 80px 24px 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 100vh;
+  transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  scroll-behavior: smooth;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Ensure pages take full width */
+.content-area > div {
+  width: 100%;
+  /* max-width: 1600px; - Removed to ensure consistent spacing from sidebar */
+  /* margin: 0 auto; - Removed to prevent shifting when sidebar toggles */
+  padding: 32px; /* Consistent padding for ALL pages */
+}
+
+/* Card style for content */
+.content-area > div {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: var(--shadow-main);
+  transition: var(--transition);
+  border: 1px solid var(--border-main);
+}
+
+/* Mobile Overlay - dimmed background */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1500; /* Below sidebar (2000) but above content */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .page-wrapper {
+    margin-left: 0 !important; /* Always 0 on mobile */
+    width: 100%;
+  }
+
+  .content-area {
+    padding: 80px 16px 16px;
+    max-width: 100vw;
+  }
+
+  /* Ensure topbar is always full width on mobile */
+  .page-wrapper.open .topbar,
+  .page-wrapper.collapsed .topbar {
+    width: 100%;
+    margin-left: 0;
+    left: 0;
+  }
+
+  /* Show overlay when sidebar is open */
+  .sidebar-overlay.open {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* ===== PAGE HEADER (REUSABLE) ===== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.page-header-left {
+  max-width: 720px;
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.page-subtitle {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Right actions */
+.page-header-right {
+  display: flex;
+  gap: 14px;
+}
+
+/* Buttons container */
+.header-actions {
+  display: flex;
+  gap: 14px;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-header-right {
+    width: 100%;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .header-actions button {
+    width: 100%;
+  }
+}

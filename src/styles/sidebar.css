@@ -1,0 +1,273 @@
+.sidebar {
+  height: 100vh;
+  background: var(--sidebar-bg);
+  color: var(--text-main);
+  position: fixed;
+  left: 0;
+  top: 0;
+  transition:
+    width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  border-right: 1px solid var(--border-main);
+}
+
+.sidebar.open {
+  width: var(--sidebar-open);
+}
+
+.sidebar.collapsed {
+  width: var(--sidebar-collapsed);
+}
+
+/* ---------- HEADER ---------- */
+/* ---------- HEADER ---------- */
+/* ---------- HEADER ---------- */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border-main);
+  margin-bottom: 20px;
+  height: 80px;
+  background: var(--sidebar-bg);
+  transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+/* .sidebar-header.open removed */
+
+/* Collapsed Header */
+.sidebar.collapsed .sidebar-header {
+  padding: 0 15px; /* Adjust to center the 40px button in 70px sidebar */
+  justify-content: center;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.3s ease;
+  max-width: 200px;
+  opacity: 1;
+  white-space: nowrap;
+}
+
+/* Hide brand in collapsed */
+.sidebar.collapsed .brand-container {
+  max-width: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.sidebar-logo-wrapper {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Optional: can add background if needed, but removebg image is likely best on transparent or dark */
+}
+
+.sidebar-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Zoom effect */
+  transform: scale(1.6);
+  /* Premium Glow */
+  filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.4));
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo-wrapper:hover .sidebar-logo {
+  transform: scale(1.7) rotate(5deg);
+}
+
+.brand-name {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin: 0;
+  /* Premium Gradient Text */
+  background: linear-gradient(135deg, var(--text-main) 0%, var(--accent) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Toggle Button */
+.toggle-btn {
+  width: 40px;
+  height: 40px;
+  background: transparent; /* No background as requested */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  background: rgba(139, 92, 246, 0.1); /* Subtle purple tint on hover */
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.bar-wrapper {
+  width: 20px;
+  height: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.toggle-btn .bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--text-main);
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-btn .bar.open:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.toggle-btn .bar.open:nth-child(2) {
+  opacity: 0;
+}
+
+.toggle-btn .bar.open:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* ---------- MENU ---------- */
+.sidebar-menu {
+  list-style: none;
+  padding: 12px;
+  flex: 1;
+}
+
+.sidebar-menu li {
+  margin-bottom: 8px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 16px 20px; /* Increased height */
+  text-decoration: none;
+  color: var(--text-muted);
+  border-radius: 99px; /* Fully curved pill */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* User requested removal of left border/indicator */
+.sidebar-link::before {
+  display: none;
+}
+
+.sidebar-link:hover {
+  background: transparent; /* No background on hover */
+  color: #a78bfa;
+  transform: translateX(4px);
+}
+
+.sidebar.collapsed .sidebar-link:hover {
+  transform: none;
+}
+
+/* Center icons when collapsed */
+.sidebar.collapsed .sidebar-link {
+  justify-content: center;
+  padding: 16px 0; /* Vertical padding only, horizontal centered by flex */
+  width: 48px; /* Fixed width for circle/square shape if desired, or just center in container */
+  margin: 0 auto; /* Center the link box itself in the sidebar */
+  border-radius: 12px; /* Nicer shape when icon-only */
+  gap: 0;
+}
+
+/* Removed ::before hover effect */
+
+.sidebar-link.active {
+  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%); /* Premium Purple Gradient */
+  color: #ffffff !important;
+  box-shadow: 0 8px 16px -4px rgba(124, 58, 237, 0.3);
+}
+
+/* Removed ::before active effect */
+
+.sidebar-link .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px; /* Fixed width */
+  height: 24px; /* Fixed height */
+  min-width: 24px;
+  transition: transform 0.3s ease;
+  background: transparent !important; /* Force remove any white background */
+}
+
+.sidebar-link:hover .icon {
+  transform: scale(1.1);
+  background: transparent !important;
+}
+
+.sidebar-link.active .icon {
+  transform: scale(1.1);
+  background: transparent !important;
+}
+
+.tab {
+  white-space: nowrap;
+  opacity: 1;
+  max-width: 200px;
+  overflow: hidden;
+  transition:
+    opacity 0.3s ease,
+    max-width 0.3s ease;
+}
+
+/* Hide text when collapsed */
+.sidebar.collapsed .tab {
+  opacity: 0;
+  max-width: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 240px;
+    box-shadow: none;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2); /* Shadow when open as overlay */
+  }
+
+  /* No collapsed state visible on mobile usually, either open (drawer) or closed (hidden) */
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+    width: 240px; /* Keep width consistent so it just slides out */
+  }
+}

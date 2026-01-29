@@ -1,0 +1,215 @@
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  /* Common */
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --danger: #ef4444;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --sidebar-w: 240px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Light Theme (Default) */
+  --bg-app: #f4f6fa;
+  --bg-surface: #ffffff;
+  --bg-secondary: #f8fafc;
+  --text-main: #111827;
+  --text-muted: #64748b;
+  --border-main: #e2e8f0;
+  --shadow-main: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.12);
+  --topbar-bg: #ffffff;
+  --sidebar-bg: #ffffff;
+  --nav-active: #eff6ff;
+  --nav-text-active: #2563eb;
+  --input-bg: #f8fafc;
+}
+
+[data-theme='dark'] {
+  --bg-app: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-secondary: #0f172a;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-main: #334155;
+  --shadow-main: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --topbar-bg: #1e293b;
+  --sidebar-bg: #1e293b;
+  --nav-active: rgba(59, 130, 246, 0.1);
+  --nav-text-active: #60a5fa;
+  --input-bg: #0f172a;
+}
+
+/* Apply base theme colors */
+body {
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  transition: var(--transition);
+}
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+}
+
+*:focus {
+  outline: none !important;
+}
+
+/* Base */
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family:
+    'Poppins',
+    'Inter',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  overflow-x: hidden; /* Strict no overflow */
+  width: 100vw;
+  overflow-y: auto;
+}
+
+/* Common elements */
+a {
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+/* === Scrollbar: Visible & Clean === */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  display: block;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.5); /* Visible visible grey */
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-muted);
+  border: 1px solid transparent;
+}
+
+/* Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+}
+
+/* === Global Status Badges (Synced with Tab styling) === */
+.loan-status {
+  padding: 6px 14px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
+  border: 1px solid transparent;
+}
+
+/* Active - Emerald */
+.loan-status.active,
+.loan-status.ACTIVE {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+/* Closed - Slate */
+.loan-status.closed,
+.loan-status.CLOSED {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  border-color: var(--border-main);
+}
+
+/* Overdue - Rose */
+.loan-status.overdue,
+.loan-status.OVERDUE {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Default/Blue */
+.loan-status.pending,
+.loan-status.PENDING,
+.loan-status.partial,
+.loan-status.PARTIAL {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+/* === Table Scroll Container === */
+.table-scroll-container {
+  max-height: 400px;
+  overflow-y: auto; /* Force scroll behavior */
+  overflow-x: auto;
+  border: none;
+  border-radius: 12px;
+  scroll-behavior: smooth;
+}
+
+.table-scroll-container table {
+  width: 100%;
+}
+
+.table-wrapper .table-scroll-container {
+  max-height: 287px;
+}
+
+.table-scroll-container thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  z-index: 10;
+  box-shadow: 0 1px 0 var(--border-main);
+}
+
+/* === Global Page Subtitles (Force Wrap) === */
+.page-subtitle,
+.dashboard-subtitle,
+.stat-sub,
+.loans-header p,
+.card-header-text p,
+.notice-text p {
+  white-space: normal !important;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

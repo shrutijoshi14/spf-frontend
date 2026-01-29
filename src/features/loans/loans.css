@@ -1,0 +1,222 @@
+.loans-page {
+  /* padding removed - handled by layout */
+  background: var(--bg-app);
+  min-height: 100vh;
+}
+
+/* HEADER */
+.loans-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-surface);
+  color: var(--text-main);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border-main);
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.loans-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.loans-header p {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* Inherited/Global Title behavior */
+.dashboard-title {
+  white-space: nowrap;
+}
+
+.loans-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* SUMMARY */
+.loan-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid var(--border-main);
+  border-top: 4px solid var(--accent);
+  box-shadow: var(--shadow-main);
+  transition: var(--transition);
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+}
+
+.summary-card h4 {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.summary-card p {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.summary-card.highlight {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+}
+
+.summary-card.highlight h4,
+.summary-card.highlight p {
+  color: white;
+}
+
+/* MOBILE */
+/* @media (max-width: 640px) {
+  .loans-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .loans-actions button {
+    width: 100%;
+  }
+} */
+
+@media (max-width: 640px) {
+  .loans-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .loans-actions button {
+    width: 100%;
+  }
+
+  .summary-card p {
+    font-size: 24px;
+  }
+}
+
+/* ===== NEW TOOLBAR STYLES (Replaces inline JSX) ===== */
+.loans-toolbar {
+  background: var(--bg-surface);
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-main);
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-main);
+}
+
+.loans-search-row {
+  position: relative;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.loans-search-input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border-main);
+  font-size: 14px;
+  background-color: var(--input-bg);
+  color: var(--text-main);
+  outline: none;
+  transition: var(--transition);
+}
+
+.loans-search-input:focus {
+  border-color: var(--accent);
+  background-color: var(--bg-surface);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.loans-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.loans-filter-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.loans-filter-btn {
+  padding: 8px 20px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent; /* default */
+}
+
+.loans-action-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.loans-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .loans-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .loans-filter-group {
+    width: 100%;
+    /* overflow-x: auto;  Optional: scroll if many filters */
+    justify-content: flex-start;
+  }
+
+  .loans-filter-btn {
+    flex: 1;
+    text-align: center;
+    min-width: 70px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+  }
+
+  .loans-action-group {
+    width: 100%;
+  }
+
+  .loans-action-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}

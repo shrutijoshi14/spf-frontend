@@ -1,0 +1,192 @@
+.add-loan-modal {
+  max-width: 900px;
+  width: 100%;
+  background: var(--bg-surface);
+  color: var(--text-main);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  border: 1px solid var(--border-main);
+}
+
+/* ===== CLOSE BUTTON ===== */
+.modal-close-btn {
+  position: absolute;
+  right: 18px;
+  top: 16px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  background: #6b7280;
+  padding: 4px 10px;
+  border-radius: 8px;
+  color: white;
+}
+
+.modal-close-btn:hover {
+  background: #7d7f82;
+  color: white;
+}
+
+/* ===== HEADER ===== */
+.modal-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg-surface);
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-main);
+  z-index: 10;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* ===== BODY ===== */
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ===== GRID ===== */
+.loan-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* ===== FORM FIELD ===== */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+  width: 100%;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-main);
+  font-size: 14px;
+  background: var(--input-bg);
+  color: var(--text-main);
+}
+
+.form-field textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* .loan-status moved to index.css for global usage */
+
+.full-width {
+  grid-column: span 2;
+}
+
+/* ===== FOOTER ===== */
+.modal-footer {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-surface);
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-main);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .loan-form {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: span 1;
+  }
+}
+
+.view-loan-modal {
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.vl-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg-surface);
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-main);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vl-close {
+  border: none;
+  background: #6b7280;
+  color: white;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.vl-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.vl-body section {
+  margin-bottom: 20px;
+}
+
+.history-row {
+  padding: 6px 0;
+  border-bottom: 1px dashed #ddd;
+}
+
+.status.active {
+  color: green;
+}
+.status.closed {
+  color: gray;
+}
+.status.overdue {
+  color: red;
+}
+
+.vl-footer {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-surface);
+  padding: 16px;
+  border-top: 1px solid var(--border-main);
+  text-align: right;
+}

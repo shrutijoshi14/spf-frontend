@@ -1,0 +1,105 @@
+/* Main Container Grid */
+.borrower-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 10px;
+}
+
+/* Section Card */
+.details-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-main);
+  border-top: 4px solid var(--accent);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow-main);
+  transition: var(--transition);
+  height: 100%;
+}
+
+.details-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Section Header */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-main);
+}
+
+.card-header h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.header-icon-bg {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Data Rows */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-row {
+  display: flex; /* Flex is safer than table row for responsiveness within small cards */
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.data-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.data-value {
+  font-size: 15px;
+  color: var(--text-main);
+  font-weight: 500;
+  word-break: break-word; /* Prevents overflow */
+  line-height: 1.4;
+}
+
+/* Section Colors (Optional theming) */
+.details-card.personal .header-icon-bg {
+  background: #eff6ff;
+  color: #3b82f6;
+} /* Blue */
+.details-card.address .header-icon-bg {
+  background: #f0fdf4;
+  color: #22c55e;
+} /* Green */
+.details-card.guarantor .header-icon-bg {
+  background: #faf5ff;
+  color: #a855f7;
+} /* Purple */
+.details-card.relative .header-icon-bg {
+  background: #fff7ed;
+  color: #f97316;
+} /* Orange */
+@media (max-width: 640px) {
+  .borrower-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

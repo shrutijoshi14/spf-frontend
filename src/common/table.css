@@ -1,0 +1,233 @@
+.table-wrapper {
+  background: var(--bg-surface);
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: var(--shadow-main);
+  overflow: hidden;
+  border: 1px solid var(--border-main);
+}
+
+/* Borders now applied directly to the table container */
+.table-wrapper .table-scroll-container {
+  border: 1px solid var(--border-main) !important;
+  border-left: 4px solid #2563eb !important; /* Default Blue */
+  border-radius: 12px;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 287px; /* Fits Header + ~4 standard rows */
+  max-width: 100%;
+  margin-bottom: 0;
+}
+
+/* Color Variants */
+.table-wrapper.border-red .table-scroll-container {
+  border-left-color: #ef4444 !important;
+}
+.table-wrapper.border-green .table-scroll-container {
+  border-left-color: #10b981 !important;
+}
+.table-wrapper.border-orange .table-scroll-container {
+  border-left-color: #f59e0b !important;
+}
+.table-wrapper.border-purple .table-scroll-container {
+  border-left-color: #8b5cf6 !important;
+}
+.table-wrapper.border-blue .table-scroll-container {
+  border-left-color: #2563eb !important;
+}
+.table-wrapper.border-slate .table-scroll-container {
+  border-left-color: #64748b !important;
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse; /* Ensure borders are merged */
+  text-align: center;
+  border-spacing: 0;
+  min-width: 1100px;
+  white-space: nowrap;
+}
+
+.app-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-main);
+  padding: 14px 16px;
+  border-bottom: 2px solid var(--border-main); /* Thicker header border */
+  z-index: 2;
+}
+
+/* ... */
+
+/* Grid borders ONLY for main tables (inside wrapper) */
+.table-wrapper .app-table td {
+  padding: 12px 12px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border-main);
+  color: var(--text-main);
+}
+
+.app-table tr:hover {
+  background: var(--bg-secondary);
+}
+
+.table-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.table-actions button {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-main);
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: var(--transition);
+}
+
+.table-actions button:hover {
+  background: var(--nav-active);
+  color: var(--nav-text-active);
+}
+
+.table-actions button.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.app-table tr {
+  transition: var(--transition);
+}
+
+.app-table tr:hover {
+  background: var(--bg-secondary);
+}
+
+.table-actions .icon {
+  border: none;
+  background: var(--bg-secondary);
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* COLORS */
+.icon.view {
+  color: #2563eb;
+}
+
+.icon.edit {
+  color: #7c3aed;
+}
+
+.icon.pay {
+  color: #16a34a;
+}
+
+.icon.topup {
+  color: #f97316;
+}
+
+.icon.delete {
+  color: #dc2626;
+}
+
+.icon.penalty {
+  color: #ef4444;
+}
+
+/* HOVER */
+.icon:hover {
+  transform: translateY(-3px) scale(1.15);
+  background: var(--nav-active);
+  color: var(--nav-text-active);
+}
+
+.icon.delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Badge / Pills Styles */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+/* Status Variants (Loan) */
+.status-badge.active {
+  background: rgba(37, 99, 235, 0.1);
+  color: #3b82f6;
+}
+.status-badge.closed {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+.status-badge.defaulted {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Payment Type Variants */
+.status-badge.emi {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+}
+.status-badge.principal {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+.status-badge.interest {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+.status-badge.penalty {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Payment Mode Variants */
+.status-badge.cash {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  border: 1px solid var(--border-main);
+}
+.status-badge.online {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.status-badge.upi,
+.status-badge.gpay,
+.status-badge.phonepe {
+  background: rgba(37, 99, 235, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+.status-badge.bank,
+.status-badge.neft,
+.status-badge.rtgs,
+.status-badge.imps {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+.status-badge.cheque {
+  background: rgba(249, 115, 22, 0.1);
+  color: #f97316;
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
