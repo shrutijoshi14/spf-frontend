@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import Loader from '../common/Loader';
 import API from '../utils/api';
 
 const AuthContext = createContext();
@@ -99,5 +100,26 @@ export const AuthProvider = ({ children }) => {
     canManageUsers: user?.role === 'SUPERADMIN' || user?.role === 'ADMIN',
   };
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  // ... existing imports
+
+  // ... inside AuthProvider
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          backgroundColor: 'var(--bg-app)', // Use theme background
+          color: 'var(--text-main)',
+        }}
+      >
+        <Loader />
+      </div>
+    );
+  }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
