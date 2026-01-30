@@ -65,18 +65,18 @@ const EditPaymentModal = ({ open, loan, paymentToEdit, onClose, onSubmit }) => {
           <div
             style={{
               padding: '10px',
-              background: '#eef2ff',
+              background: 'var(--nav-active)',
               borderRadius: '6px',
               marginBottom: '1.5rem',
-              border: '1px solid #c7d2fe',
+              border: '1px solid var(--border-main)',
             }}
           >
-            <p style={{ margin: 0, color: '#3730a3', fontSize: '0.9rem' }}>
+            <p style={{ margin: 0, color: 'var(--accent)', fontSize: '0.9rem' }}>
               <strong>Borrower:</strong> {loan.full_name || 'N/A'}
             </p>
-            <p style={{ margin: '4px 0 0', color: '#3730a3', fontSize: '0.9rem' }}>
+            <p style={{ margin: '4px 0 0', color: 'var(--accent)', fontSize: '0.9rem' }}>
               <strong>Outstanding Balance:</strong>{' '}
-              <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
+              <span style={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'var(--text-main)' }}>
                 ₹{loan.outstanding_amount}
               </span>
             </p>
@@ -127,12 +127,6 @@ const EditPaymentModal = ({ open, loan, paymentToEdit, onClose, onSubmit }) => {
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
                 rows={2}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                }}
               />
             </div>
 

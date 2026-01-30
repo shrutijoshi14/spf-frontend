@@ -113,12 +113,6 @@ const AddTopupModal = ({ open, loan, onClose, onSubmit }) => {
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
                 rows={2}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                }}
               />
             </div>
 

@@ -1,51 +1,81 @@
+/* Base Container (Relative/Inline) */
 .loader-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px;
   width: 100%;
-  height: 100%;
+  height: 100%; /* Fill parent */
+  min-height: 200px; /* Minimum height for inline usage */
+  background-color: transparent;
+}
+
+/* Full Screen Overlay Mode */
+.loader-container.loader-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0f172a !important; /* Force Dark Background for Premium Load */
+  z-index: 9999;
 }
 
 .loader-wrapper {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 120px; /* Slightly larger */
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Logo styling */
-/* Light Mode (Default) - Invert colors so White becomes Black, but keep Yellowish tone */
+/* Logo styling - NO FILTERS, Original Colors */
 .loader-logo {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
   z-index: 2;
-  animation: pulse 2s infinite ease-in-out;
-  /* Invert makes white->black. Hue-rotate 180 tries to bring colors back to original spectrum (e.g. Blue->Yellow) */
-  filter: invert(1) hue-rotate(180deg) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  /* Gentle pulse for "Alive" feel */
+  animation: logo-pulse 2s infinite ease-in-out;
+  /* Minimal shadow for depth */
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
-/* Dark Mode - Restore original (White & Yellow) colors */
+/* Dark Mode Logo Shadow enhancement */
 [data-theme='dark'] .loader-logo {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
 }
 
-/* Spinner ring */
+/* Spinner ring - Glowing & Stylish */
 .loader-ring {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  border: 3px solid transparent;
-  border-top-color: #6366f1; /* Purple */
-  border-right-color: #ec4899; /* Pink/Rose highlight */
   border-radius: 50%;
+  border: 3px solid transparent;
+
+  /* Modern Gradient Border Effect */
+  background: conic-gradient(from 0deg, transparent 0%, var(--accent) 50%, transparent 100%);
+
+  /* Mask to create the "Ring" shape from the gradient background */
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+
   animation: spin 1s linear infinite;
+}
+
+/* Optional: Secondary Ring for visual complexity */
+.loader-ring::after {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0.1;
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 /* Keyframes */
@@ -58,10 +88,10 @@
   }
 }
 
-@keyframes pulse {
+@keyframes logo-pulse {
   0% {
     transform: scale(0.95);
-    opacity: 0.8;
+    opacity: 0.9;
   }
   50% {
     transform: scale(1.05);
@@ -69,6 +99,14 @@
   }
   100% {
     transform: scale(0.95);
-    opacity: 0.8;
+    opacity: 0.9;
+  }
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
   }
 }

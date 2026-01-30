@@ -100,10 +100,6 @@ export const AuthProvider = ({ children }) => {
     canManageUsers: user?.role === 'SUPERADMIN' || user?.role === 'ADMIN',
   };
 
-  // ... existing imports
-
-  // ... inside AuthProvider
-
   if (loading) {
     return (
       <div

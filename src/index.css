@@ -213,3 +213,9 @@ ul {
   overflow-wrap: break-word;
   word-break: break-word;
 }
+
+/* === Global Text Selection === */
+::selection {
+  background-color: rgba(139, 92, 246, 0.4);
+  color: #d0cbcb;
+}

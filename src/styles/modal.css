@@ -84,21 +84,25 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Custom scrollbar inherits from global */
 
 /* HEADER */
 .modal-header.sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
   background: var(--bg-surface);
   padding: 20px 24px;
   border-bottom: 1px solid var(--border-main);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
+  border-radius: 20px 20px 0 0;
 }
 
 .modal-header h3 {
@@ -138,15 +142,17 @@
 
 /* FOOTER */
 .sticky-footer {
-  position: sticky;
-  bottom: 0;
-  z-index: 20;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
   background: var(--bg-surface);
   padding: 20px 24px;
   border-top: 1px solid var(--border-main);
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+  flex-shrink: 0;
+  border-radius: 0 0 20px 20px;
 }
 
 .sticky-footer .app-btn {
@@ -314,41 +320,7 @@
   overflow-y: auto;
 }
 
-.sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--bg-surface);
-  padding: 18px 24px;
-  border-bottom: 1px solid var(--border-main);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.sticky-footer {
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-  background: var(--bg-surface);
-  padding: 12px 24px;
-  border-top: 1px solid var(--border-main);
-}
-
-.modal-footer {
-  flex-shrink: 0;
-  z-index: 10;
-  background: var(--bg-surface);
-  position: relative;
-  border-top: 1px solid var(--border-main);
-}
-
-.modal-body-scroll {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;
-  position: relative;
-}
+/* [Duplicate rules removed to prevent conflicts] */
 
 /* Standardize Select to match Input */
 .form-field select,
@@ -555,4 +527,15 @@ textarea:focus {
     padding: 12px 8px; /* Taller touch targets */
     font-size: 13px; /* Slightly smaller text if needed */
   }
+}
+
+/* CONFIRMATION MODAL */
+.modal-box.confirmation-box {
+  width: min(480px, 95vw);
+  max-width: 480px;
+}
+
+/* Explicit Standard Width for Edit Modals */
+.modal-box.edit-standard {
+  width: min(900px, 95vw);
 }

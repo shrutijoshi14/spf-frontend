@@ -31,12 +31,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  border-bottom: 1px solid var(--border-main);
+  border-bottom: none;
   margin-bottom: 20px;
   height: 80px;
   background: var(--sidebar-bg);
   transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+  margin-top: 20px;
 }
 
 /* .sidebar-header.open removed */
@@ -108,18 +109,19 @@
   width: 40px;
   height: 40px;
   background: transparent; /* No background as requested */
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  padding: 8px;
 }
 
 .toggle-btn:hover {
-  background: rgba(139, 92, 246, 0.1); /* Subtle purple tint on hover */
-  border-color: rgba(139, 92, 246, 0.3);
+  background: transparent;
+  transform: scale(1.1);
 }
 
 .bar-wrapper {

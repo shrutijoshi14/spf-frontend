@@ -1,9 +1,8 @@
 import './loader.css';
 
-const Loader = ({ size = 'medium' }) => {
-  // Scale based on props if needed, for now just standard
+const Loader = ({ size = 'medium', fullScreen = false }) => {
   return (
-    <div className="loader-container">
+    <div className={`loader-container ${fullScreen ? 'loader-fullscreen' : ''}`}>
       <div className="loader-wrapper">
         <div className="loader-ring"></div>
         <img src="/spf_logo-removebg-preview.png" alt="Loading..." className="loader-logo" />

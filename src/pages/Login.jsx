@@ -13,6 +13,9 @@ const Login = () => {
   const [showSignupConfirm, setShowSignupConfirm] = useState(false);
   const [showSigninPassword, setShowSigninPassword] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // ... (states)
   const [welcomeName, setWelcomeName] = useState('');
 
   const [signup, setSignup] = useState({
@@ -23,18 +26,18 @@ const Login = () => {
     confirmPassword: '',
   });
 
-  useEffect(() => {
-    const storedName = localStorage.getItem('full_name');
-    if (storedName) {
-      setWelcomeName(storedName);
-      setIsSignUp(false); // Default to sign in for returning users
-    }
-  }, []);
-
   const [signin, setSignin] = useState({
     email: '',
     password: '',
   });
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('full_name');
+    if (storedName) {
+      setWelcomeName(storedName);
+      setIsSignUp(false);
+    }
+  }, []);
 
   const handleSignupChange = (e) => {
     setSignup({ ...signup, [e.target.name]: e.target.value });
@@ -44,14 +47,15 @@ const Login = () => {
     setSignin({ ...signin, [e.target.name]: e.target.value });
   };
 
-  // ✅ SIGNUP
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
+    setIsLoading(true);
     setError('');
 
     if (signup.password !== signup.confirmPassword) {
-      // setError('Passwords do not match');
       toast.error('Passwords do not match');
+      setIsLoading(false);
       return;
     }
 
@@ -65,7 +69,6 @@ const Login = () => {
 
       toast.success('Signup successful! Please login 🎉');
 
-      // ✅ CLEAR FORM AFTER SIGNUP
       setSignup({
         full_name: '',
         email: '',
@@ -77,23 +80,23 @@ const Login = () => {
       setIsSignUp(false);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Signup failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // ✅ LOGIN
   const handleSigninSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
+    setIsLoading(true);
     setError('');
 
     try {
       const res = await API.post('/auth/login', signin);
-
-      // ✅ FIXED: Access nested data object
       const userData = res.data;
 
       login(userData);
-
-      // ⭐ SET NAME FOR WELCOME CARD
       setWelcomeName(userData.full_name);
 
       if (userData.isFirstSuperAdmin) {
@@ -105,13 +108,13 @@ const Login = () => {
       toast.success(`Welcome ${userData.full_name} 👋`);
 
       setTimeout(() => {
-        // Redirect everyone to the main dashboard
         navigate('/dashboard');
-      }, 1200); // 1.2 sec
+      }, 1200);
     } catch (err) {
-      // setError(err.response?.data?.message || 'Invalid credentials');
       toast.error(err.response?.data?.message || 'Invalid credentials');
+      setIsLoading(false); // Only set false on error, keep true for success redirect
     }
+    // Note: On success we don't set loading false to prevent button flashing before navigation
   };
 
   return (
@@ -164,7 +167,9 @@ const Login = () => {
               </span>
             </div>
 
-            <button type="submit">Sign Up</button>
+            <button type="submit" disabled={isLoading} style={{ opacity: isLoading ? 0.7 : 1 }}>
+              {isLoading ? 'Signing Up...' : 'Sign Up'}
+            </button>
           </form>
         </div>
 
@@ -203,7 +208,9 @@ const Login = () => {
               Forgot your password?
             </button>
 
-            <button type="submit">Login</button>
+            <button type="submit" disabled={isLoading} style={{ opacity: isLoading ? 0.7 : 1 }}>
+              {isLoading ? 'Logging In...' : 'Login'}
+            </button>
           </form>
         </div>
 

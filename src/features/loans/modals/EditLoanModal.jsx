@@ -149,16 +149,19 @@ const EditLoanModal = ({ open, loan, onClose }) => {
       <div className="modal-body-scroll">
         <div className="form-section">
           {/* Info Display */}
+          {/* Info Display - Standardized */}
           <div
             style={{
-              marginBottom: '1rem',
-              padding: '0.5rem',
-              background: 'var(--bg-secondary)',
-              borderRadius: '4px',
+              marginBottom: '1.5rem',
+              padding: '12px 16px',
+              background: 'var(--nav-active)',
+              borderRadius: '12px',
               border: '1px solid var(--border-main)',
             }}
           >
-            <strong>Borrower:</strong> {borrowerName}
+            <p style={{ margin: 0, color: 'var(--accent)', fontSize: '0.9rem' }}>
+              <strong>Borrower:</strong> {borrowerName}
+            </p>
           </div>
 
           <div className="form-grid">

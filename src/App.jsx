@@ -20,20 +20,7 @@ function App() {
     <Router>
       <AuthProvider>
         <ThemeProvider>
-          <Suspense
-            fallback={
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '100vh',
-                }}
-              >
-                <Loader />
-              </div>
-            }
-          >
+          <Suspense fallback={<Loader fullScreen={true} />}>
             <Routes>
               {/* Public */}
               <Route path="/" element={<Login />} />

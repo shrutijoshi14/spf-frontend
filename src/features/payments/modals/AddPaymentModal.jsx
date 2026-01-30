@@ -142,14 +142,6 @@ const AddPaymentModal = ({ open, loan, onClose, onSubmit }) => {
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
                 rows={2}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  borderRadius: '4px',
-                  border: '1px solid var(--border-main)',
-                  background: 'var(--input-bg)',
-                  color: 'var(--text-main)',
-                }}
               />
             </div>
 
