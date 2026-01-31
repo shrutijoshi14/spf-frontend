@@ -37,7 +37,7 @@ const RecentActivity = () => {
           bg: '#ecfdf5',
           label: 'Payment Received',
           amountSign: '+',
-          amountColor: '#059669',
+          amountColor: '#10b981',
         };
       case 'LOAN':
         return {
@@ -46,7 +46,7 @@ const RecentActivity = () => {
           bg: '#eff6ff',
           label: 'Loan Disbursed',
           amountSign: '',
-          amountColor: '#1e293b',
+          amountColor: '#3b82f6',
         };
       case 'TOPUP':
         return {
@@ -55,7 +55,7 @@ const RecentActivity = () => {
           bg: '#eff6ff',
           label: 'Top-up Added',
           amountSign: '+',
-          amountColor: '#1e293b',
+          amountColor: '#3b82f6',
         };
       case 'PENALTY':
         return {
@@ -64,7 +64,7 @@ const RecentActivity = () => {
           bg: '#fef2f2',
           label: 'Penalty Applied',
           amountSign: '+',
-          amountColor: '#b91c1c',
+          amountColor: '#ef4444',
         };
       case 'BORROWER':
         return {
@@ -73,7 +73,7 @@ const RecentActivity = () => {
           bg: '#eef2ff',
           label: 'New Member',
           amountSign: '',
-          amountColor: '#4338ca',
+          amountColor: '#6366f1',
         };
       default:
         return {
@@ -82,7 +82,7 @@ const RecentActivity = () => {
           bg: '#f1f5f9',
           label: 'Transaction',
           amountSign: '',
-          amountColor: '#334155',
+          amountColor: 'var(--text-main)',
         };
     }
   };

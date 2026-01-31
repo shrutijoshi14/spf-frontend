@@ -43,6 +43,7 @@ const LoansPage = ({ initialModal }) => {
   const [openPenalty, setOpenPenalty] = useState(false);
   const [openEditLoan, setOpenEditLoan] = useState(false);
   const [openImport, setOpenImport] = useState(false);
+  const [importType, setImportType] = useState('loans'); // Default to 'loans'
   const [openLoanModal, setOpenLoanModal] = useState(false);
   const [openAddBorrower, setOpenAddBorrower] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState({ open: false, data: null });
@@ -294,7 +295,10 @@ const LoansPage = ({ initialModal }) => {
           {/* Right: Actions */}
           <div className="loans-action-group">
             <button
-              onClick={() => setOpenImport(true)}
+              onClick={() => {
+                setImportType('loans');
+                setOpenImport(true);
+              }}
               className="loans-action-btn"
               style={{
                 border: '1px solid var(--border-main)',
@@ -365,6 +369,13 @@ const LoansPage = ({ initialModal }) => {
         onEdit={(loan) => {
           navigate(`/loans/edit/${loan.loan_id}`);
         }}
+        onPay={handlePayClick}
+        onTopup={handleTopupClick}
+        onPenalty={handlePenaltyClick}
+        onImport={(type) => {
+          setImportType(type || 'loans');
+          setOpenImport(true);
+        }}
       />
 
       <EditLoanModal
@@ -420,6 +431,8 @@ const LoansPage = ({ initialModal }) => {
 
       <ImportLoansModal
         open={openImport}
+        type={importType}
+        loanId={selectedLoan?.loan_id}
         onClose={() => setOpenImport(false)}
         onSuccess={handleImportSuccess}
       />

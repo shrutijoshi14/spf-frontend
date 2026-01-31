@@ -8,14 +8,14 @@
 }
 
 .vl-sidebar {
-  width: 300px;
+  width: 350px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 20px;
   padding: 24px 12px 24px 24px;
   height: 100%;
-  overflow-y: scroll; /* Left side always has scrollbar */
+  overflow-y: auto; /* Left side scrollbar only if needed */
 }
 
 .vl-main {
@@ -124,7 +124,7 @@
 }
 
 .history-table td {
-  padding: 10px 16px; /* Increased slightly for spacing without borders */
+  padding: 16px 24px; /* Consistent standard padding */
   border-bottom: 1px solid var(--border-main);
   color: var(--text-main);
   text-align: center;
@@ -187,4 +187,71 @@
 .history-table .icon-btn.delete-btn:hover {
   background: #ef4444;
   color: white;
+}
+
+/* PREMIUM HEADER ACTIONS */
+.vl-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  white-space: nowrap;
+}
+
+/* Pay Button - Gradient */
+.vl-btn.pay {
+  background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+.vl-btn.pay:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px rgba(37, 99, 235, 0.3);
+}
+
+/* Topup Button - Gradient Orange */
+.vl-btn.topup {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
+}
+.vl-btn.topup:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* Icon Buttons (Import/Export) - Premium Surface */
+.vl-icon-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-main);
+  color: var(--text-muted);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.vl-icon-action:hover {
+  background: var(--bg-secondary);
+  color: var(--text-main);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
 }

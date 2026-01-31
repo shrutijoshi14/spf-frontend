@@ -1,3 +1,5 @@
+import { AlertTriangle, Banknote, Landmark, User } from 'lucide-react';
+import Button from '../../../common/Button';
 import Modal from '../../../common/Modal';
 import '../../../styles/modal.css';
 
@@ -12,19 +14,37 @@ const ActivityModal = ({ isOpen, activity, onClose }) => {
     }).format(amount || 0);
   };
 
+  const getAmountColor = () => {
+    switch (activity.type) {
+      case 'LOAN':
+        return '#3b82f6';
+      case 'PAYMENT':
+        return '#10b981';
+      case 'PENALTY':
+        return '#ef4444';
+      default:
+        return 'var(--text-main)';
+    }
+  };
+
+  const getHeaderIcon = () => {
+    switch (activity.type) {
+      case 'LOAN':
+        return <Landmark size={22} style={{ color: '#2563eb' }} />;
+      case 'PAYMENT':
+        return <Banknote size={22} style={{ color: '#10b981' }} />;
+      case 'PENALTY':
+        return <AlertTriangle size={22} style={{ color: '#ef4444' }} />;
+      default:
+        return <User size={22} style={{ color: 'var(--text-main)' }} />;
+    }
+  };
+
   return (
     <Modal open={isOpen} onClose={onClose}>
-      <div className="modal-header sticky-header" style={{ position: 'relative' }}>
-        <h3
-          style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}
-        >
-          {activity.type === 'LOAN'
-            ? '🏦'
-            : activity.type === 'PAYMENT'
-              ? '💰'
-              : activity.type === 'PENALTY'
-                ? '⚠'
-                : '👤'}
+      <div className="modal-header sticky-header">
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {getHeaderIcon()}
           {activity.title}
         </h3>
         <button className="modal-close" onClick={onClose}>
@@ -32,37 +52,41 @@ const ActivityModal = ({ isOpen, activity, onClose }) => {
         </button>
       </div>
 
-      <div className="modal-scroll" style={{ padding: '24px' }}>
+      <div className="modal-scroll">
         <div className="form-section" style={{ padding: 0 }}>
           <div
             className="detail-row"
             style={{
-              marginBottom: '20px',
+              marginBottom: '16px',
               display: 'flex',
               justifyContent: 'space-between',
-              borderBottom: '1px solid #f1f5f9',
+              borderBottom: '1px solid var(--border-main)',
               paddingBottom: '12px',
             }}
           >
-            <span style={{ color: '#64748b', fontWeight: '500' }}>Event</span>
-            <span style={{ fontWeight: '600', color: '#0f172a' }}>{activity.description}</span>
+            <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>Event</span>
+            <span style={{ fontWeight: '600', color: 'var(--text-main)' }}>
+              {activity.description}
+            </span>
           </div>
 
           <div
             className="detail-row"
             style={{
-              marginBottom: '20px',
+              marginBottom: '16px',
               display: 'flex',
               justifyContent: 'space-between',
-              borderBottom: '1px solid #f1f5f9',
+              borderBottom: '1px solid var(--border-main)',
               paddingBottom: '12px',
             }}
           >
-            <span style={{ color: '#64748b', fontWeight: '500' }}>Transaction Amount</span>
+            <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>
+              Transaction Amount
+            </span>
             <span
               style={{
                 fontWeight: '700',
-                color: activity.type === 'BORROWER' ? '#64748b' : '#0f172a',
+                color: activity.type === 'BORROWER' ? 'var(--text-muted)' : getAmountColor(),
                 fontSize: '22px',
               }}
             >
@@ -73,15 +97,15 @@ const ActivityModal = ({ isOpen, activity, onClose }) => {
           <div
             className="detail-row"
             style={{
-              marginBottom: '20px',
+              marginBottom: '16px',
               display: 'flex',
               justifyContent: 'space-between',
-              borderBottom: '1px solid #f1f5f9',
+              borderBottom: '1px solid var(--border-main)',
               paddingBottom: '12px',
             }}
           >
-            <span style={{ color: '#64748b', fontWeight: '500' }}>Logged On</span>
-            <span style={{ fontWeight: '500', color: '#334155' }}>
+            <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>Logged On</span>
+            <span style={{ fontWeight: '500', color: 'var(--text-main)' }}>
               {new Date(activity.time).toLocaleString('en-IN', {
                 dateStyle: 'medium',
                 timeStyle: 'short',
@@ -93,17 +117,17 @@ const ActivityModal = ({ isOpen, activity, onClose }) => {
             className="detail-row"
             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
           >
-            <span style={{ color: '#64748b', fontWeight: '500' }}>Activity Category</span>
+            <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>Activity Category</span>
             <span
-              className="status-badge active"
               style={{
-                background: '#f8fafc',
-                border: '1px solid #e2e8f0',
-                color: '#475569',
+                background: 'var(--bg-secondary)',
+                border: '1px solid var(--border-main)',
+                color: 'var(--text-main)',
                 padding: '4px 12px',
                 borderRadius: '6px',
                 fontSize: '12px',
                 fontWeight: '600',
+                textTransform: 'uppercase',
               }}
             >
               {activity.type}

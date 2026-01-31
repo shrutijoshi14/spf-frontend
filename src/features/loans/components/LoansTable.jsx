@@ -17,10 +17,10 @@ const LoansTable = ({ loans: loansProp, onView, onPay, onTopup, onPenalty, onDel
       render: (row) => getBorrowerName(row.borrower_id),
     },
     { key: 'principal_amount', label: 'Principal' },
-    { key: 'interest_rate', label: 'Interest %' },
+    { key: 'interest_rate', label: 'Interest Rate %' },
     {
       key: 'monthly_interest',
-      label: 'Interest Amt',
+      label: 'Interest Amount (M)',
       render: (row) => `₹${Math.round((row.principal_amount * row.interest_rate) / 100)}`,
     },
     {
@@ -28,7 +28,7 @@ const LoansTable = ({ loans: loansProp, onView, onPay, onTopup, onPenalty, onDel
       label: 'Penalty Paid',
       render: (row) => `₹${row.penalty_paid || 0}`,
     },
-    { key: 'outstanding_amount', label: 'Outstanding' },
+    { key: 'outstanding_amount', label: 'Outstanding Principal' },
     {
       key: 'status',
       label: 'Status',

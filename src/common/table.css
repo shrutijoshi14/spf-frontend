@@ -14,7 +14,7 @@
   border-radius: 12px;
   overflow-x: auto;
   overflow-y: auto;
-  max-height: 287px; /* Fits Header + ~4 standard rows */
+  max-height: 332px;
   max-width: 100%;
   margin-bottom: 0;
 }
@@ -55,7 +55,7 @@
   font-size: 15px;
   font-weight: 600;
   color: var(--text-main);
-  padding: 14px 16px;
+  padding: 16px 24px;
   border-bottom: 2px solid var(--border-main); /* Thicker header border */
   z-index: 2;
 }
@@ -64,10 +64,11 @@
 
 /* Grid borders ONLY for main tables (inside wrapper) */
 .table-wrapper .app-table td {
-  padding: 12px 12px;
+  padding: 16px 24px;
   font-size: 14px;
   border-bottom: 1px solid var(--border-main);
   color: var(--text-main);
+  vertical-align: middle;
 }
 
 .app-table tr:hover {

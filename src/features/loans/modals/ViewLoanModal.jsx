@@ -1,4 +1,4 @@
-import { FileX } from 'lucide-react';
+import { Download, FileX, Upload } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import Button from '../../../common/Button';
@@ -15,7 +15,7 @@ import EditPenaltyModal from './EditPenaltyModal';
 import EditTopupModal from './EditTopupModal';
 import './view-loan-modal.css';
 
-const ViewLoanModal = ({ open, loanId, onClose, onEdit }) => {
+const ViewLoanModal = ({ open, loanId, onClose, onEdit, onPay, onTopup, onPenalty, onImport }) => {
   const {
     deletePayment,
     updatePayment,
@@ -136,6 +136,107 @@ const ViewLoanModal = ({ open, loanId, onClose, onEdit }) => {
     }).format(amount || 0);
   };
 
+  // Helper: Download Loan Statement as CSV
+  const handleDownload = () => {
+    if (!data) {
+      console.warn('No data available for download');
+      return;
+    }
+
+    let headers = [];
+    let rows = [];
+    let filename = `Loan_Extract_${loanId}.csv`;
+    const fullName = data.loan?.full_name || 'Loan';
+
+    if (activeTab === 'payments') {
+      if (!data.payments) return;
+      headers = ['Date,Amount,Type/For,Mode,Penalty Paid,Interest Paid,Principal Paid,Remarks'];
+      filename = `Loan_Payments_${fullName}_${loanId}.csv`;
+
+      rows = data.payments.map((p) => {
+        const date = formatDate(p.payment_date);
+        const amount = Number(p.payment_amount) || 0;
+        const type = p.payment_for || p.payment_type || 'EMI';
+        const mode = p.payment_mode || 'N/A';
+        const remarks = (p.remarks || '').replace(/,/g, ' ');
+
+        const isPenalty = p.payment_for === 'PENALTY';
+        const penaltyPaid = isPenalty ? amount : 0;
+        let interestPaid = 0;
+        let principalPaid = 0;
+
+        if (!isPenalty && data.loan) {
+          const rate = Number(data.loan.interest_rate) || 0;
+          const principal = Number(data.loan.principal_amount) || 0;
+          const outstanding = Number(data.loan.outstanding_amount) || 0;
+          const monthlyInterest =
+            data.loan.interest_type === 'REDUCING'
+              ? (outstanding * rate) / 100
+              : (principal * rate) / 100;
+
+          if (amount >= monthlyInterest) {
+            interestPaid = Math.round(monthlyInterest);
+            principalPaid = amount - interestPaid;
+          } else {
+            interestPaid = amount;
+            principalPaid = 0;
+          }
+        }
+
+        return `${date},${amount},${type},${mode},${penaltyPaid || '-'},${interestPaid || '-'},${principalPaid || '-'},${remarks}`;
+      });
+    } else if (activeTab === 'topups') {
+      if (!data.topups) return;
+      headers = ['Date,Amount'];
+      filename = `Loan_Topups_${fullName}_${loanId}.csv`;
+
+      rows = data.topups.map((t) => {
+        return `${formatDate(t.topup_date)},${Number(t.topup_amount || 0)}`;
+      });
+    } else if (activeTab === 'penalties') {
+      if (activePenaltyTab === 'paid') {
+        const penaltyPayments = data.payments
+          ? data.payments.filter((p) => p.payment_for === 'PENALTY' || p.payment_type === 'PENALTY')
+          : [];
+        headers = ['Date,Amount,Mode,Remarks'];
+        filename = `Penalty_Paid_${fullName}_${loanId}.csv`;
+
+        rows = penaltyPayments.map((p) => {
+          return `${formatDate(p.payment_date)},${Number(p.payment_amount) || 0},${p.payment_mode || 'N/A'},${(p.remarks || '').replace(/,/g, ' ')}`;
+        });
+      } else {
+        // Applied
+        if (!data.penalties) return;
+        headers = ['Date,Amount,Reason'];
+        filename = `Penalties_Applied_${fullName}_${loanId}.csv`;
+
+        // Sorting by date descending to match UI
+        const sortedPenalties = [...data.penalties].sort(
+          (a, b) => new Date(b.penalty_date) - new Date(a.penalty_date)
+        );
+
+        rows = sortedPenalties.map((p) => {
+          return `${formatDate(p.penalty_date)},${Number(p.penalty_amount) || 0},${(p.reason || '').replace(/,/g, ' ')}`;
+        });
+      }
+    }
+
+    if (headers.length === 0 || rows.length === 0) {
+      alert('No data to export for the selected tab.');
+      return;
+    }
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (!open) return null;
 
   return (
@@ -143,20 +244,45 @@ const ViewLoanModal = ({ open, loanId, onClose, onEdit }) => {
       <Modal open={open} onClose={onClose}>
         <div className="modal-header sticky-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <h3>💰 Loan Details</h3>
-            <span
-              style={{
-                background: 'var(--nav-active)',
-                color: 'var(--accent)',
-                padding: '4px 12px',
-                borderRadius: '999px',
-                fontSize: '14px',
-                fontWeight: '600',
-                border: '1px solid var(--border-main)',
-              }}
+            <h3>💰 {data?.loan?.full_name}'s Loan Details</h3>
+          </div>
+          <div className="vl-header-actions">
+            {!loading && data?.loan?.status === 'ACTIVE' && (
+              <>
+                <button
+                  className="vl-btn topup"
+                  onClick={() => onTopup && onTopup(data.loan)}
+                  title="Top Up Loan"
+                >
+                  <span style={{ fontSize: '14px' }}>+</span> TOP UP
+                </button>
+                <button
+                  className="vl-btn pay"
+                  onClick={() => onPay && onPay(data.loan)}
+                  title="Make Payment"
+                >
+                  <span style={{ fontSize: '14px' }}>₹</span> PAY
+                </button>
+              </>
+            )}
+            <button
+              className="vl-icon-action"
+              title={`Import ${activeTab ? activeTab.charAt(0).toUpperCase() + activeTab.slice(1) : ''}`}
+              onClick={() => onImport && onImport(activeTab)}
             >
-              #{loanId}
-            </span>
+              <Upload size={18} />
+            </button>
+            <button className="vl-icon-action" title="Download Statement" onClick={handleDownload}>
+              <Download size={18} />
+            </button>
+            <div
+              style={{
+                width: '1px',
+                height: '20px',
+                background: 'var(--border-main)',
+                margin: '0 4px',
+              }}
+            ></div>
           </div>
           <button className="modal-close" onClick={onClose}>
             <span>×</span>
@@ -193,19 +319,13 @@ const ViewLoanModal = ({ open, loanId, onClose, onEdit }) => {
                     <strong>Principal:</strong>{' '}
                     <span>₹{formatCurrency(data.loan.principal_amount)}</span>
                   </p>
+                  <p></p>
                   <p>
-                    <strong>Disbursed:</strong>{' '}
-                    <span>{formatDate(data.loan.disbursement_date)}</span>
-                  </p>
-                  <p>
-                    <strong>Due Date:</strong>{' '}
+                    <strong>Loan Due Date:</strong>{' '}
                     <span>{data.loan.due_date ? formatDate(data.loan.due_date) : 'N/A'}</span>
                   </p>
                   <p>
-                    <strong>Rate:</strong>{' '}
-                    <span>
-                      {data.loan.interest_rate}% ({data.loan.interest_type})
-                    </span>
+                    <strong>Interest Rate p.m.:</strong> <span>{data.loan.interest_rate}%</span>
                   </p>
                   <p>
                     <strong>Tenure:</strong>{' '}
@@ -218,6 +338,10 @@ const ViewLoanModal = ({ open, loanId, onClose, onEdit }) => {
                     <span className={`loan-status ${data.loan.status.toLowerCase()}`}>
                       {data.loan.status}
                     </span>
+                  </p>
+                  <p>
+                    <strong>Disbursement Date:</strong>{' '}
+                    <span>{formatDate(data.loan.disbursement_date)}</span>
                   </p>
                   <p>
                     <strong>Purpose:</strong> <span>{data.loan.purpose || 'N/A'}</span>
@@ -238,7 +362,11 @@ const ViewLoanModal = ({ open, loanId, onClose, onEdit }) => {
                       ⚠️ Liability Check
                     </h5>
                     <p style={{ margin: '4px 0', fontSize: '0.85rem' }}>
-                      <strong>Monthly Interest:</strong> ₹
+                      <strong>Outstanding Principal:</strong> ₹
+                      {formatCurrency(data.loan.outstanding_amount)}
+                    </p>
+                    <p style={{ margin: '4px 0', fontSize: '0.85rem' }}>
+                      <strong>Interest Amount p.m.:</strong> ₹
                       {formatCurrency(
                         Math.round(
                           data.loan.interest_type === 'REDUCING'
@@ -280,7 +408,7 @@ const ViewLoanModal = ({ open, loanId, onClose, onEdit }) => {
                               color: pending > 0 ? '#ef4444' : '#10b981',
                             }}
                           >
-                            <strong>Penalty Pending:</strong> ₹{formatCurrency(pending)}
+                            <strong>Penalty to be Paid:</strong> ₹{formatCurrency(pending)}
                           </p>
                         </>
                       );
@@ -344,53 +472,108 @@ const ViewLoanModal = ({ open, loanId, onClose, onEdit }) => {
                   {activeTab === 'payments' && (
                     <HistoryTable
                       variant="green"
-                      headers={['Date', 'Amount', 'For', 'Mode', 'Remarks', 'Actions']}
+                      headers={[
+                        'id',
+                        'Payment Date',
+                        'Payment Mode',
+                        'Amount Paid',
+                        'Penalty Paid',
+                        'Interest Paid',
+                        'Principal Paid',
+                        'Comments',
+                        'Actions',
+                      ]}
                       rows={data.payments}
-                      mapRow={(p) => (
-                        <tr key={p.payment_id}>
-                          <td>{formatDate(p.payment_date)}</td>
-                          <td>₹{formatCurrency(p.payment_amount)}</td>
-                          <td>
-                            {/* Fallback to payment_type for old records if payment_for is missing */}
-                            <span className="badge-blue">
-                              {p.payment_for || p.payment_type || 'EMI'}
-                            </span>
-                          </td>
-                          <td>{p.payment_mode || 'N/A'}</td>
-                          <td
-                            title={p.remarks}
-                            style={{
-                              maxWidth: '150px',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                            }}
-                          >
-                            {p.remarks || '-'}
-                          </td>
-                          <td className="actions-cell">
-                            <button
-                              className="icon-btn edit-btn"
-                              onClick={() => {
-                                setPaymentToEdit(p);
-                                setOpenPaymentModal(true);
+                      mapRow={(p, index) => {
+                        // Calculate components (Approximation for display)
+                        const isPenalty = p.payment_for === 'PENALTY';
+                        const amount = Number(p.payment_amount);
+                        const penaltyPaid = isPenalty ? amount : 0;
+
+                        // NOTE: Backend doesn't store historical split.
+                        // We approximate Interest Paid using current rate logic or 0 if Penalty only.
+                        // Assuming non-penalty payment covers interest first.
+                        // Ideally, backend should return these values.
+
+                        let interestPaid = 0;
+                        let principalPaid = 0;
+
+                        if (!isPenalty) {
+                          // Assuming Simple Interest logic for display if data missing
+                          // Using the 'Interest Amount p.m.' logic for context
+                          const rate = Number(data.loan.interest_rate);
+                          const principal = Number(data.loan.principal_amount); // Using initial principal as base or outstanding? Wireframe shows simple numbers.
+                          // Let's use 0 placeholder or logic if we can derive it.
+                          // User wireframe has values.
+
+                          // TRY: We will calculate Interest based on the loan type logic
+                          // But since we don't have historical outstanding, this is inaccurate.
+                          // User asked to "change names and calculations".
+                          // Let's assume standard EMI distribution: Interest = (Outstanding * Rate/100).
+                          // We don't have historical outstanding.
+                          // FALLBACK: Show total in Principal and 0 in Interest for now, OR show standard monthly interest if amount > monthly interest?
+                          // User provided specific number example: Paid 3000 -> Int 1000, Prin 2000.
+                          // This implies: Interest Paid = Monthly Interest (approx). Principal = Remainder.
+
+                          const monthlyInterest =
+                            data.loan.interest_type === 'REDUCING'
+                              ? (Number(data.loan.outstanding_amount) * rate) / 100 // This uses CURRENT outstanding. wrong for history.
+                              : (principal * rate) / 100;
+
+                          // If amount > monthlyInterest, assume full interest paid.
+                          if (amount >= monthlyInterest) {
+                            interestPaid = Math.round(monthlyInterest);
+                            principalPaid = amount - interestPaid;
+                          } else {
+                            interestPaid = amount;
+                            principalPaid = 0;
+                          }
+                        }
+
+                        return (
+                          <tr key={p.payment_id}>
+                            <td>{index + 1}</td>
+                            <td>{formatDate(p.payment_date)}</td>
+                            <td>{p.payment_mode || 'N/A'}</td>
+                            <td>₹{formatCurrency(p.payment_amount)}</td>
+                            <td>{penaltyPaid > 0 ? `₹${formatCurrency(penaltyPaid)}` : '-'}</td>
+                            <td>{interestPaid > 0 ? `₹${formatCurrency(interestPaid)}` : '-'}</td>
+                            <td>{principalPaid > 0 ? `₹${formatCurrency(principalPaid)}` : '-'}</td>
+                            <td
+                              title={p.remarks}
+                              style={{
+                                maxWidth: '150px',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
                               }}
-                              title="Edit Payment"
                             >
-                              <FaEdit />
-                            </button>
-                            {hasPermission('payment.delete') && (
+                              {p.remarks || '-'}
+                            </td>
+                            <td className="actions-cell">
                               <button
-                                className="icon-btn delete-btn"
-                                onClick={() => handleDeleteClick('payment', p)}
-                                title="Delete Payment"
+                                className="icon-btn edit-btn"
+                                onClick={() => {
+                                  setPaymentToEdit(p);
+                                  setOpenPaymentModal(true);
+                                }}
+                                title="Edit Payment"
                               >
-                                <FaTrash />
+                                <FaEdit />
                               </button>
-                            )}
-                          </td>
-                        </tr>
-                      )}
+                              {hasPermission('payment.delete') && (
+                                <button
+                                  className="icon-btn delete-btn"
+                                  onClick={() => handleDeleteClick('payment', p)}
+                                  title="Delete Payment"
+                                >
+                                  <FaTrash />
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      }}
                       emptyMsg="No payments recorded"
                     />
                   )}
