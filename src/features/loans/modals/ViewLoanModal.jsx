@@ -1,4 +1,4 @@
-import { Download, FileX, Upload } from 'lucide-react';
+import { Banknote, Download, FileX, TrendingUp, Upload } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import Button from '../../../common/Button';
@@ -15,7 +15,17 @@ import EditPenaltyModal from './EditPenaltyModal';
 import EditTopupModal from './EditTopupModal';
 import './view-loan-modal.css';
 
-const ViewLoanModal = ({ open, loanId, onClose, onEdit, onPay, onTopup, onPenalty, onImport }) => {
+const ViewLoanModal = ({
+  open,
+  loanId,
+  onClose,
+  onEdit,
+  onPay,
+  onTopup,
+  onPenalty,
+  onImport,
+  refreshTrigger,
+}) => {
   const {
     deletePayment,
     updatePayment,
@@ -61,7 +71,7 @@ const ViewLoanModal = ({ open, loanId, onClose, onEdit, onPay, onTopup, onPenalt
 
   useEffect(() => {
     if (open) fetchDetails();
-  }, [open, fetchDetails, loans]); // ✅ Auto-refresh when global loans change
+  }, [open, fetchDetails, refreshTrigger]); // Auto-refresh on specific trigger (after Pay/Topup)
 
   const handleDeleteClick = (type, item) => {
     setConfirmModal({ open: true, type, data: item });
@@ -254,14 +264,14 @@ const ViewLoanModal = ({ open, loanId, onClose, onEdit, onPay, onTopup, onPenalt
                   onClick={() => onTopup && onTopup(data.loan)}
                   title="Top Up Loan"
                 >
-                  <span style={{ fontSize: '14px' }}>+</span> TOP UP
+                  <TrendingUp size={16} /> TOP UP
                 </button>
                 <button
                   className="vl-btn pay"
                   onClick={() => onPay && onPay(data.loan)}
                   title="Make Payment"
                 >
-                  <span style={{ fontSize: '14px' }}>₹</span> PAY
+                  <Banknote size={16} /> PAY
                 </button>
               </>
             )}

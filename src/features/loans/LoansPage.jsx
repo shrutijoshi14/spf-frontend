@@ -43,10 +43,11 @@ const LoansPage = ({ initialModal }) => {
   const [openPenalty, setOpenPenalty] = useState(false);
   const [openEditLoan, setOpenEditLoan] = useState(false);
   const [openImport, setOpenImport] = useState(false);
-  const [importType, setImportType] = useState('loans'); // Default to 'loans'
+  const [importType, setImportType] = useState('loans');
   const [openLoanModal, setOpenLoanModal] = useState(false);
   const [openAddBorrower, setOpenAddBorrower] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState({ open: false, data: null });
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Trigger for forcing ViewLoan update
 
   const [selectedLoan, setSelectedLoan] = useState(null);
 
@@ -135,6 +136,7 @@ const LoansPage = ({ initialModal }) => {
     const res = await addPayment(paymentData);
     if (res.success) {
       setOpenPay(false);
+      setRefreshTrigger((prev) => prev + 1);
     }
   };
 
@@ -142,6 +144,7 @@ const LoansPage = ({ initialModal }) => {
     const res = await addTopup(topupData);
     if (res.success) {
       setOpenTopup(false);
+      setRefreshTrigger((prev) => prev + 1);
     }
   };
 
@@ -149,12 +152,14 @@ const LoansPage = ({ initialModal }) => {
     const res = await addPenalty(penaltyData);
     if (res.success) {
       setOpenPenalty(false);
+      setRefreshTrigger((prev) => prev + 1);
     }
   };
 
   const handleImportSuccess = (result) => {
     toast.success(result.message);
-    fetchLoans();
+    fetchLoans(searchTerm); // Keep existing search refresh
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   /* ... imports remain same ... */
@@ -182,12 +187,15 @@ const LoansPage = ({ initialModal }) => {
     return matchesStatus;
   });
 
-  // Export Logic
+  // Export Logic matching Table columns
   const handleExport = () => {
-    const csvHeader = ['LoanID,Borrower,Principal,Status,DisbursementDate'];
+    const csvHeader = [
+      'LoanID,Borrower,Principal,Interest Rate,Interest Amount (M),Penalty Paid,Outstanding Principal,Status,DisbursementDate',
+    ];
     const csvRows = filteredLoans.map((l) => {
       const bName = borrowers.find((b) => b.borrower_id === l.borrower_id)?.full_name || 'Unknown';
-      return `${l.loan_id},"${bName}",${l.principal_amount},${l.status},${l.disbursement_date}`;
+      const monthlyInterest = Math.round((l.principal_amount * l.interest_rate) / 100);
+      return `${l.loan_id},"${bName}",${l.principal_amount},${l.interest_rate},${monthlyInterest},${l.penalty_paid || 0},${l.outstanding_amount},${l.status},${l.disbursement_date}`;
     });
     const csvString = [csvHeader, ...csvRows].join('\n');
     const blob = new Blob([csvString], { type: 'text/csv' });
@@ -376,6 +384,7 @@ const LoansPage = ({ initialModal }) => {
           setImportType(type || 'loans');
           setOpenImport(true);
         }}
+        refreshTrigger={refreshTrigger}
       />
 
       <EditLoanModal
