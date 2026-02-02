@@ -95,16 +95,18 @@ const BorrowersPage = ({ initialModal }) => {
           <p className="dashboard-subtitle">Manage member profiles and contact information</p>
         </div>
 
-        <Button
-          variant="primary"
-          className="add-btn"
-          onClick={() => setOpenAddModal(true)}
-          text={
-            <>
-              <UserPlus size={18} /> Add Borrower
-            </>
-          }
-        />
+        {hasPermission('borrower.create') && (
+          <Button
+            variant="primary"
+            className="add-btn"
+            onClick={() => setOpenAddModal(true)}
+            text={
+              <>
+                <UserPlus size={18} /> Add Borrower
+              </>
+            }
+          />
+        )}
       </div>
 
       <div
@@ -179,10 +181,14 @@ const BorrowersPage = ({ initialModal }) => {
         borrowers={filteredBorrowers}
         loading={borrowersLoading}
         onView={(b) => navigate(`/borrowers/view/${b.borrower_id}`)}
-        onEdit={(b) => {
-          setSelectedBorrower(b);
-          setOpenEditModal(true);
-        }}
+        onEdit={
+          hasPermission('borrower.edit')
+            ? (b) => {
+                setSelectedBorrower(b);
+                setOpenEditModal(true);
+              }
+            : undefined
+        }
         onDelete={hasPermission('borrower.delete') ? handleDeleteClick : undefined}
       />
 

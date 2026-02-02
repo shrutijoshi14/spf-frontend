@@ -181,8 +181,8 @@ const ViewLoanModal = ({
           const outstanding = Number(data.loan.outstanding_amount) || 0;
           const monthlyInterest =
             data.loan.interest_type === 'REDUCING'
-              ? (outstanding * rate) / 100
-              : (principal * rate) / 100;
+              ? (Number(data.loan.outstanding_amount) * rate) / 100
+              : (Number(data.loan.principal_amount) * rate) / 100;
 
           if (amount >= monthlyInterest) {
             interestPaid = Math.round(monthlyInterest);
@@ -259,21 +259,34 @@ const ViewLoanModal = ({
           <div className="vl-header-actions">
             {!loading && data?.loan?.status === 'ACTIVE' && (
               <>
-                <button
-                  className="vl-btn topup"
-                  onClick={() => onTopup && onTopup(data.loan)}
-                  title="Top Up Loan"
-                >
-                  <TrendingUp size={16} /> TOP UP
-                </button>
-                <button
-                  className="vl-btn pay"
-                  onClick={() => onPay && onPay(data.loan)}
-                  title="Make Payment"
-                >
-                  <Banknote size={16} /> PAY
-                </button>
+                {onTopup && (
+                  <button
+                    className="vl-btn topup"
+                    onClick={() => onTopup(data.loan)}
+                    title="Top Up Loan"
+                  >
+                    <TrendingUp size={16} /> TOP UP
+                  </button>
+                )}
+                {onPay && (
+                  <button
+                    className="vl-btn pay"
+                    onClick={() => onPay(data.loan)}
+                    title="Make Payment"
+                  >
+                    <Banknote size={16} /> PAY
+                  </button>
+                )}
               </>
+            )}
+            {onEdit && (
+              <button
+                className="vl-icon-action"
+                title="Edit Loan"
+                onClick={() => onEdit(data.loan)}
+              >
+                <FaEdit size={18} />
+              </button>
             )}
             <button
               className="vl-icon-action"

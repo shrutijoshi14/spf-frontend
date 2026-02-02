@@ -7,12 +7,43 @@ import {
   LinearScale,
   Tooltip,
 } from 'chart.js';
+import { BarChart3, PieChart, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { useLoanContext } from '../../../context/LoanContext';
 import { useTheme } from '../../../context/ThemeContext';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
+
+const ChartPlaceholder = ({ icon: Icon, message }) => (
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100%',
+      color: 'var(--text-muted)',
+      gap: '12px',
+      opacity: 0.7,
+    }}
+  >
+    <div
+      style={{
+        width: '56px',
+        height: '56px',
+        background: 'var(--bg-app)',
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Icon size={24} className="text-muted" style={{ opacity: 0.6 }} />
+    </div>
+    <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{message}</span>
+  </div>
+);
 
 const Charts = () => {
   const { theme } = useTheme();
@@ -268,7 +299,12 @@ const Charts = () => {
       >
         <h3 style={{ color: 'var(--text-main)' }}>📊 Monthly Interest by Borrower</h3>
         <div style={{ position: 'relative', flex: 1, width: '100%', minHeight: 0 }}>
-          <Bar data={interestData} options={interestOptions} key={windowWidth} />
+          {interestData.datasets[0].data.length > 0 &&
+          interestData.datasets[0].data.some((v) => v > 0) ? (
+            <Bar data={interestData} options={interestOptions} key={windowWidth} />
+          ) : (
+            <ChartPlaceholder icon={BarChart3} message="No interest data available" />
+          )}
         </div>
       </div>
 
@@ -286,9 +322,15 @@ const Charts = () => {
             minHeight: 0,
             display: 'flex',
             justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
-          <Doughnut data={doughnutData} options={doughnutOptions} key={windowWidth} />
+          {doughnutData.datasets[0].data.length > 0 &&
+          doughnutData.datasets[0].data.some((v) => v > 0) ? (
+            <Doughnut data={doughnutData} options={doughnutOptions} key={windowWidth} />
+          ) : (
+            <ChartPlaceholder icon={PieChart} message="No Loan Status Data" />
+          )}
         </div>
       </div>
 
@@ -299,7 +341,12 @@ const Charts = () => {
       >
         <h3 style={{ color: 'var(--text-main)' }}>📈 Payment Performance</h3>
         <div style={{ position: 'relative', flex: 1, width: '100%', minHeight: 0 }}>
-          <Bar data={paymentPerformanceData} options={interestOptions} key={windowWidth} />
+          {paymentPerformanceData.datasets[0].data.length > 0 &&
+          paymentPerformanceData.datasets[0].data.some((v) => v > 0) ? (
+            <Bar data={paymentPerformanceData} options={interestOptions} key={windowWidth} />
+          ) : (
+            <ChartPlaceholder icon={TrendingUp} message="No payment history yet" />
+          )}
         </div>
       </div>
     </div>

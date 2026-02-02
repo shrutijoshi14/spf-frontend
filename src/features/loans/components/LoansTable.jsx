@@ -21,7 +21,11 @@ const LoansTable = ({ loans: loansProp, onView, onPay, onTopup, onPenalty, onDel
     {
       key: 'monthly_interest',
       label: 'Interest Amount (M)',
-      render: (row) => `₹${Math.round((row.principal_amount * row.interest_rate) / 100)}`,
+      render: (row) => {
+        const basis =
+          row.interest_type === 'REDUCING' ? row.outstanding_amount : row.principal_amount;
+        return `₹${Math.round((basis * row.interest_rate) / 100)}`;
+      },
     },
     {
       key: 'penalty_paid',
@@ -57,7 +61,7 @@ const LoansTable = ({ loans: loansProp, onView, onPay, onTopup, onPenalty, onDel
           <TableActions
             row={row}
             onView={() => onView(row)}
-            onPay={() => onPay(row)}
+            onPay={onPay ? () => onPay(row) : undefined}
             onTopup={onTopup ? () => onTopup(row) : undefined}
             onPenalty={onPenalty ? () => onPenalty(row) : undefined}
             onWhatsApp={handleWhatsApp}

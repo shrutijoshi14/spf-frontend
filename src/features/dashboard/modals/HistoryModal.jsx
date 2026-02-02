@@ -12,7 +12,7 @@ import Modal from '../../../common/Modal';
 import '../../../common/table.css';
 import '../../../styles/modal.css';
 import API from '../../../utils/api';
-import { formatDate } from '../../../utils/dateUtils';
+import { formatDateTime } from '../../../utils/dateUtils';
 
 const HistoryModal = ({ open, onClose }) => {
   const [history, setHistory] = useState([]);
@@ -178,10 +178,10 @@ const HistoryModal = ({ open, onClose }) => {
           <table className="app-table">
             <thead style={{ background: 'var(--bg-secondary)' }}>
               <tr>
-                <th style={{ paddingLeft: '24px', color: 'var(--text-main)' }}>Type</th>
+                <th style={{ paddingLeft: '24px', color: 'var(--text-main)' }}>Date</th>
+                <th style={{ color: 'var(--text-main)' }}>Type</th>
                 <th style={{ color: 'var(--text-main)' }}>Description</th>
-                <th style={{ color: 'var(--text-main)' }}>Amount</th>
-                <th style={{ paddingRight: '24px', color: 'var(--text-main)' }}>Date</th>
+                <th style={{ paddingRight: '24px', color: 'var(--text-main)' }}>Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -194,7 +194,10 @@ const HistoryModal = ({ open, onClose }) => {
               ) : history.length > 0 ? (
                 history.map((item) => (
                   <tr key={`${item.type}-${item.id}`}>
-                    <td style={{ paddingLeft: '24px' }}>
+                    <td style={{ paddingLeft: '24px', whiteSpace: 'nowrap' }}>
+                      {formatDateTime(item.date)}
+                    </td>
+                    <td>
                       <span
                         className={`status-badge ${
                           item.type === 'LOAN'
@@ -244,6 +247,7 @@ const HistoryModal = ({ open, onClose }) => {
                     <td style={{ textAlign: 'left', fontWeight: '500' }}>{item.description}</td>
                     <td
                       style={{
+                        paddingRight: '24px',
                         fontWeight: '700',
                         color:
                           item.type === 'LOAN' || item.type === 'TOPUP'
@@ -264,7 +268,6 @@ const HistoryModal = ({ open, onClose }) => {
                         </span>
                       )}
                     </td>
-                    <td style={{ paddingRight: '24px' }}>{formatDate(item.date)}</td>
                   </tr>
                 ))
               ) : (

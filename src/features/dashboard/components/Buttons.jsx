@@ -12,36 +12,40 @@ const Buttons = ({ onAddBorrower, onAddLoan }) => {
     <div className="buttons-container">
       <div className="action-buttons-row">
         {/* ADD BORROWER */}
-        <Button
-          onClick={onAddBorrower}
-          variant="primary"
-          className="add-btn"
-          text={
-            <>
-              <UserPlus size={18} />
-              <span>Add Borrower</span>
-            </>
-          }
-        />
+        {onAddBorrower && (
+          <Button
+            onClick={onAddBorrower}
+            variant="primary"
+            className="add-btn"
+            text={
+              <>
+                <UserPlus size={18} />
+                <span>Add Borrower</span>
+              </>
+            }
+          />
+        )}
 
         {/* ADD LOAN */}
-        <Button
-          onClick={() => {
-            if (!hasBorrowers) {
-              toast.info('Please add a borrower first');
-              return;
+        {onAddLoan && (
+          <Button
+            onClick={() => {
+              if (!hasBorrowers) {
+                toast.info('Please add a borrower first');
+                return;
+              }
+              onAddLoan();
+            }}
+            variant="outline"
+            className="add-btn"
+            text={
+              <>
+                <Plus size={20} />
+                <span>Add Loan</span>
+              </>
             }
-            onAddLoan();
-          }}
-          variant="outline"
-          className="add-btn"
-          text={
-            <>
-              <Plus size={20} />
-              <span>Add Loan</span>
-            </>
-          }
-        />
+          />
+        )}
       </div>
 
       {/* WARNING / NOTICE */}

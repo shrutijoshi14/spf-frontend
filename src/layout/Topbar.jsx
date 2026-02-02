@@ -104,7 +104,7 @@ const Topbar = ({ username, role, toggleSidebar, isSidebarOpen }) => {
           <div className="logo-wrapper">
             <img
               src="/spf_logo.jpeg"
-              alt="SNP Finance Logo"
+              alt="SP Finance Logo"
               className="logo-img"
               width="40"
               height="40"
@@ -112,7 +112,7 @@ const Topbar = ({ username, role, toggleSidebar, isSidebarOpen }) => {
             />
           </div>
         </a>
-        <h1>SNP Finance</h1>
+        <h1>SP Finance</h1>
       </div>
 
       {/* Right (Notifications, Welcome, Profile) */}

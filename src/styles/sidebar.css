@@ -185,8 +185,7 @@
 }
 
 .sidebar-link:hover {
-  background: transparent; /* No background on hover */
-  color: #a78bfa;
+  background: transparent;
   transform: translateX(4px);
 }
 
@@ -222,7 +221,7 @@
   height: 24px; /* Fixed height */
   min-width: 24px;
   transition: transform 0.3s ease;
-  background: transparent !important; /* Force remove any white background */
+  background: transparent !important;
 }
 
 .sidebar-link:hover .icon {

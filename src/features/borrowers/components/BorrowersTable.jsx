@@ -46,9 +46,9 @@ const BorrowersTable = ({ onView, onEdit, onDelete }) => {
         return (
           <TableActions
             onView={() => onView(row)}
-            onEdit={() => onEdit(row)}
+            onEdit={onEdit ? () => onEdit(row) : undefined}
             onWhatsApp={handleWhatsApp}
-            onDelete={() => onDelete(row)}
+            onDelete={onDelete ? () => onDelete(row) : undefined}
             hidePay
           />
         );

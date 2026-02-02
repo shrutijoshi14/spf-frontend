@@ -7,17 +7,55 @@ import {
   Users2,
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/sidebar.css';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
+  const { hasPermission } = useAuth();
+
   const menuItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, end: true },
-    { path: '/loans', label: 'Loans', icon: <CircleDollarSign size={20} /> },
-    { path: '/borrowers', label: 'Borrowers', icon: <Users2 size={20} /> },
-    { path: '/payments', label: 'Payments', icon: <FileText size={20} /> },
-    { path: '/reports', label: 'Reports', icon: <BarChart3 size={20} /> },
-    { path: '/settings', label: 'Settings', icon: <Settings size={20} /> },
+    {
+      path: '/dashboard',
+      label: 'Dashboard',
+      icon: <LayoutDashboard size={20} />,
+      end: true,
+      permission: null,
+    },
+    {
+      path: '/loans',
+      label: 'Loans',
+      icon: <CircleDollarSign size={20} />,
+      permission: 'loan.view',
+    },
+    {
+      path: '/borrowers',
+      label: 'Borrowers',
+      icon: <Users2 size={20} />,
+      permission: 'borrower.view',
+    },
+    {
+      path: '/payments',
+      label: 'Payments',
+      icon: <FileText size={20} />,
+      permission: 'payment.view',
+    },
+    {
+      path: '/reports',
+      label: 'Reports',
+      icon: <BarChart3 size={20} />,
+      permission: 'reports.view',
+    },
+    {
+      path: '/settings',
+      label: 'Settings',
+      icon: <Settings size={20} />,
+      permission: 'settings.view',
+    },
   ];
+
+  const visibleMenuItems = menuItems.filter(
+    (item) => !item.permission || hasPermission(item.permission)
+  );
 
   // Auto-close sidebar on mobile when a link is clicked
   const handleMobileClick = () => {
@@ -46,7 +84,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       </div>
 
       <ul className="sidebar-menu">
-        {menuItems.map((item) => (
+        {visibleMenuItems.map((item) => (
           <li key={item.path}>
             <NavLink
               to={item.path}

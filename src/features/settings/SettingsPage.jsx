@@ -7,6 +7,7 @@ import { useTheme } from '../../context/ThemeContext';
 import '../../styles/modal.css';
 import API from '../../utils/api';
 import { formatDateTime } from '../../utils/dateUtils';
+import TrashManager from './components/TrashManager';
 import './settings.css';
 
 const SettingsPage = () => {
@@ -309,77 +310,99 @@ const SettingsPage = () => {
           </div>
         </div>
 
-        {/* System Configuration */}
-        <div className="settings-card card-system">
-          <div className="card-header">
-            <div className="card-icon-box system">
-              <Settings size={20} />
+        {/* System Configuration (Admins Only) */}
+        {hasPermission('settings.edit') && (
+          <div className="settings-card card-system">
+            <div className="card-header">
+              <div className="card-icon-box system">
+                <Settings size={20} />
+              </div>
+              <div className="card-header-text">
+                <h3>Loan Operations</h3>
+                <p>Configure automated system rules</p>
+              </div>
             </div>
-            <div className="card-header-text">
-              <h3>Loan Operations</h3>
-              <p>Configure automated system rules</p>
+
+            <div className="card-body">
+              <div className="setting-item">
+                <div className="setting-info">
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    Automated Penalties
+                    {!isSuperAdmin && (
+                      <span
+                        style={{
+                          fontSize: '12px',
+                          background: 'var(--bg-secondary)',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          border: '1px solid var(--border-main)',
+                        }}
+                      >
+                        🔒 Super Admin Only
+                      </span>
+                    )}
+                  </label>
+                  <p>Enable daily fines for late payments</p>
+                </div>
+                <label className={`switch ${!isSuperAdmin ? 'disabled' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={settings.penalty_enabled === 'true'}
+                    onChange={(e) =>
+                      setSettings({ ...settings, penalty_enabled: String(e.target.checked) })
+                    }
+                    disabled={!isSuperAdmin}
+                  />
+                  <span className="slider round"></span>
+                </label>
+              </div>
+
+              <div
+                className={`setting-item input-group ${
+                  settings.penalty_enabled !== 'true' || !isSuperAdmin ? 'disabled' : ''
+                }`}
+              >
+                <div className="setting-info">
+                  <label>Daily Penalty Amount</label>
+                  <p>Fine amount applied per day (₹)</p>
+                </div>
+                <div className="input-wrapper-inner">
+                  <span className="currency-prefix">₹</span>
+                  <input
+                    type="number"
+                    className="settings-input"
+                    value={settings.penalty_amount}
+                    onChange={(e) => setSettings({ ...settings, penalty_amount: e.target.value })}
+                    disabled={!isSuperAdmin || settings.penalty_enabled !== 'true'}
+                  />
+                </div>
+              </div>
+
+              <div
+                className={`setting-item input-group ${
+                  settings.penalty_enabled !== 'true' || !isSuperAdmin ? 'disabled' : ''
+                }`}
+              >
+                <div className="setting-info">
+                  <label>Penalty Start Day</label>
+                  <p>Day of month when penalties begin (Default: 5th)</p>
+                </div>
+                <div className="input-wrapper-inner">
+                  <span className="currency-prefix">Day</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="28"
+                    className="settings-input"
+                    value={settings.penalty_days}
+                    onChange={(e) => setSettings({ ...settings, penalty_days: e.target.value })}
+                    disabled={!isSuperAdmin || settings.penalty_enabled !== 'true'}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-
-          <div className="card-body">
-            <div className="setting-item">
-              <div className="setting-info">
-                <label>Automated Penalties</label>
-                <p>Enable daily fines for late payments</p>
-              </div>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  checked={settings.penalty_enabled === 'true'}
-                  onChange={(e) =>
-                    setSettings({ ...settings, penalty_enabled: String(e.target.checked) })
-                  }
-                />
-                <span className="slider round"></span>
-              </label>
-            </div>
-
-            <div
-              className={`setting-item input-group ${settings.penalty_enabled !== 'true' ? 'disabled' : ''}`}
-            >
-              <div className="setting-info">
-                <label>Daily Penalty Amount</label>
-                <p>Fine amount applied per day (₹)</p>
-              </div>
-              <div className="input-wrapper-inner">
-                <span className="currency-prefix">₹</span>
-                <input
-                  type="number"
-                  className="settings-input"
-                  value={settings.penalty_amount}
-                  onChange={(e) => setSettings({ ...settings, penalty_amount: e.target.value })}
-                  disabled={settings.penalty_enabled !== 'true'}
-                />
-              </div>
-            </div>
-
-            <div
-              className={`setting-item input-group ${settings.penalty_enabled !== 'true' ? 'disabled' : ''}`}
-            >
-              <div className="setting-info">
-                <label>Penalty Start Day</label>
-                <p>Day of month when penalties begin (Default: 5th)</p>
-              </div>
-              <div className="input-wrapper-inner">
-                <span className="currency-prefix">Day</span>
-                <input
-                  type="number"
-                  min="1"
-                  max="28"
-                  className="settings-input"
-                  value={settings.penalty_days}
-                  onChange={(e) => setSettings({ ...settings, penalty_days: e.target.value })}
-                  disabled={settings.penalty_enabled !== 'true'}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* User Management (RBAC Controlled) */}
         {hasPermission('users.view') && (
@@ -580,40 +603,63 @@ const SettingsPage = () => {
           </div>
         )}
 
-        <div
-          className="settings-card card-data full-width disabled-opacity"
-          style={{ gridColumn: '1 / -1' }}
-        >
-          <div className="card-header">
-            <div className="card-icon-box database">
-              <Database size={20} />
+        {/* Trash / Recovery Manager (Admins Only) */}
+        {isAdmin && (
+          <div className="settings-card card-trash" style={{ gridColumn: '1 / -1' }}>
+            <div className="card-header">
+              <div
+                className="card-icon-box"
+                style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}
+              >
+                <Trash2 size={20} />
+              </div>
+              <div className="card-header-text">
+                <h3>Trash & Recovery</h3>
+                <p>Restore accidentally deleted borrowers and loans</p>
+              </div>
             </div>
-            <div className="card-header-text">
-              <h3>Data Management</h3>
-              <p>Export reports and manage backups</p>
-            </div>
-          </div>
-          <div className="card-body">
-            <div className="data-actions">
-              <button className="export-btn" onClick={handleBackup}>
-                <Database size={24} />
-                <span>Backup Database</span>
-              </button>
-              <button className="export-btn" onClick={() => handleExport('loans')}>
-                <FileText size={24} />
-                <span>Export Loans</span>
-              </button>
-              <button className="export-btn" onClick={() => handleExport('payments')}>
-                <FileText size={24} />
-                <span>Export Payments</span>
-              </button>
-              <button className="export-btn" onClick={() => handleExport('users')}>
-                <Users size={24} />
-                <span>Export Users</span>
-              </button>
+            <div className="card-body" style={{ padding: 0 }}>
+              <TrashManager />
             </div>
           </div>
-        </div>
+        )}
+
+        {hasPermission('settings.edit') && (
+          <div
+            className="settings-card card-data full-width disabled-opacity"
+            style={{ gridColumn: '1 / -1' }}
+          >
+            <div className="card-header">
+              <div className="card-icon-box database">
+                <Database size={20} />
+              </div>
+              <div className="card-header-text">
+                <h3>Data Management</h3>
+                <p>Export reports and manage backups</p>
+              </div>
+            </div>
+            <div className="card-body">
+              <div className="data-actions">
+                <button className="export-btn" onClick={handleBackup}>
+                  <Database size={24} />
+                  <span>Backup Database</span>
+                </button>
+                <button className="export-btn" onClick={() => handleExport('loans')}>
+                  <FileText size={24} />
+                  <span>Export Loans</span>
+                </button>
+                <button className="export-btn" onClick={() => handleExport('payments')}>
+                  <FileText size={24} />
+                  <span>Export Payments</span>
+                </button>
+                <button className="export-btn" onClick={() => handleExport('users')}>
+                  <Users size={24} />
+                  <span>Export Users</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Role Permissions (Admin Only) */}

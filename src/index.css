@@ -216,6 +216,6 @@ ul {
 
 /* === Global Text Selection === */
 ::selection {
-  background-color: rgba(139, 92, 246, 0.4);
-  color: #d0cbcb;
+  background-color: var(--text-muted);
+  color: var(--bg-surface);
 }

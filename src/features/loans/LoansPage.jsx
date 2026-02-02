@@ -107,6 +107,9 @@ const LoansPage = ({ initialModal }) => {
     };
 
     checkPenalties();
+
+    // Force refresh loans on mount to ensure restored items appear
+    fetchLoans(searchTerm);
   }, []);
 
   const handleView = (row) => {
@@ -136,6 +139,7 @@ const LoansPage = ({ initialModal }) => {
     const res = await addPayment(paymentData);
     if (res.success) {
       setOpenPay(false);
+      fetchLoans(searchTerm); // Force refresh with current search scope
       setRefreshTrigger((prev) => prev + 1);
     }
   };
@@ -215,8 +219,10 @@ const LoansPage = ({ initialModal }) => {
         </div>
 
         <Buttons
-          onAddBorrower={() => setOpenAddBorrower(true)}
-          onAddLoan={() => setOpenLoanModal(true)}
+          onAddBorrower={
+            hasPermission('borrower.create') ? () => setOpenAddBorrower(true) : undefined
+          }
+          onAddLoan={hasPermission('loan.create') ? () => setOpenLoanModal(true) : undefined}
         />
       </div>
 
@@ -302,28 +308,30 @@ const LoansPage = ({ initialModal }) => {
 
           {/* Right: Actions */}
           <div className="loans-action-group">
-            <button
-              onClick={() => {
-                setImportType('loans');
-                setOpenImport(true);
-              }}
-              className="loans-action-btn"
-              style={{
-                border: '1px solid var(--border-main)',
-                background: 'var(--bg-surface)',
-                color: 'var(--text-main)',
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = 'var(--bg-secondary)';
-                e.target.style.borderColor = 'var(--accent)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = 'var(--bg-surface)';
-                e.target.style.borderColor = 'var(--border-main)';
-              }}
-            >
-              <Upload size={16} /> Import
-            </button>
+            {hasPermission('loan.create') && (
+              <button
+                onClick={() => {
+                  setImportType('loans');
+                  setOpenImport(true);
+                }}
+                className="loans-action-btn"
+                style={{
+                  border: '1px solid var(--border-main)',
+                  background: 'var(--bg-surface)',
+                  color: 'var(--text-main)',
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'var(--bg-secondary)';
+                  e.target.style.borderColor = 'var(--accent)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'var(--bg-surface)';
+                  e.target.style.borderColor = 'var(--border-main)';
+                }}
+              >
+                <Upload size={16} /> Import
+              </button>
+            )}
             <button
               onClick={handleExport}
               className="loans-action-btn"
@@ -347,7 +355,7 @@ const LoansPage = ({ initialModal }) => {
         onView={handleView}
         onPay={handlePayClick}
         onTopup={handleTopupClick}
-        onPenalty={handlePenaltyClick}
+        onPenalty={hasPermission('payment.override') ? handlePenaltyClick : undefined}
         onDelete={
           hasPermission('loan.delete')
             ? (row) => setConfirmDelete({ open: true, data: row })
@@ -379,7 +387,7 @@ const LoansPage = ({ initialModal }) => {
         }}
         onPay={handlePayClick}
         onTopup={handleTopupClick}
-        onPenalty={handlePenaltyClick}
+        onPenalty={hasPermission('payment.override') ? handlePenaltyClick : undefined}
         onImport={(type) => {
           setImportType(type || 'loans');
           setOpenImport(true);
