@@ -2,8 +2,8 @@
 /*                                    Login                                   */
 /* -------------------------------------------------------------------------- */
 .auth-wrapper {
-  height: 100vh; /* 🔴 fixed height */
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  height: 100vh;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); /* Deep dark background */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,186 +12,124 @@
 
 /* CONTAINER */
 .container {
-  background-color: var(--bg-surface);
-  border-radius: 14px;
-  box-shadow: var(--shadow-main);
+  background-color: #1e293b; /* Dark card background */
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
-
-  max-width: 100%;
-  width: 900px;
-  min-height: 470px;
+  max-width: 90%;
+  width: 420px;
+  min-height: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* FORM */
 .form-container {
-  position: absolute;
-  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100%;
-  transition: all 0.6s ease-in-out;
-}
-
-.sign-in-container {
-  left: 0;
-  width: 50%;
+  width: 100%;
   z-index: 2;
 }
 
-.sign-up-container {
-  left: 0;
-  width: 50%;
-  opacity: 0;
-  z-index: 1;
-}
-
-.container.right-panel-active .sign-in-container {
-  transform: translateX(100%);
-}
-
-.container.right-panel-active .sign-up-container {
-  transform: translateX(100%);
-  opacity: 1;
-  z-index: 5;
-}
-
 form {
-  background-color: var(--bg-surface);
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 0 45px;
+  padding: 40px 30px;
   height: 100%;
+  width: 100%;
   text-align: center;
 }
 
-input {
-  background-color: var(--input-bg);
-  color: var(--text-main);
-  border: 1px solid var(--border-main);
-  padding: 12px 14px;
-  margin: 8px 0;
+h1 {
+  font-weight: 700;
+  margin: 0 0 20px; /* More bottom margin */
+  color: #ffffff;
+}
+
+/* INPUTS - Scoped to Auth */
+.auth-wrapper input {
+  background-color: #334155; /* Darker input bg */
+  color: #f8fafc; /* Light text */
+  border: 1px solid #475569;
+  padding: 14px 16px;
+  margin: 10px 0;
   width: 100%;
   border-radius: 8px;
-  font-size: 14px;
-  transition: 0.3s;
+  font-size: 15px;
+  transition: all 0.3s ease;
 }
 
-input:focus {
+.auth-wrapper input::placeholder {
+  color: #94a3b8;
+}
+
+.auth-wrapper input:focus {
   outline: none;
-  border-color: var(--accent);
-  background-color: var(--bg-surface);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: #60a5fa; /* Accent blue */
+  background-color: #334155;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
-button {
-  border-radius: 22px;
+/* BUTTON - Scoped to Auth */
+.auth-wrapper button {
+  border-radius: 8px;
   border: none;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #3b82f6; /* Solid accent color */
   color: #ffffff;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
-  padding: 12px 20px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(118, 75, 162, 0.4);
-  background: white;
-  color: #764ba2;
-  border: 1px solid #764ba2;
-}
-
-button.ghost {
-  background: transparent;
-  border: 1px solid #ffffff;
-}
-
-button.ghost:hover {
-  background: #ffffff;
-  color: #764ba2;
-  border: 1px solid #764ba2;
-}
-
-/* OVERLAY */
-.overlay-container {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 50%;
-  height: 100%;
-  overflow: hidden;
-  transition: transform 0.6s ease-in-out;
-  z-index: 100;
-}
-
-.container.right-panel-active .overlay-container {
-  transform: translateX(-100%);
-}
-
-.overlay {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #ffffff;
-  background-repeat: no-repeat;
-  background-size: cover;
-  position: relative;
-  left: -100%;
-  height: 100%;
-  width: 200%;
-  transform: translateX(0);
-  transition: transform 0.6s ease-in-out;
-}
-
-.container.right-panel-active .overlay {
-  transform: translateX(50%);
-}
-
-.overlay-panel {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  padding: 0 40px;
-  text-align: center;
-  top: 0;
-  height: 100%;
-  width: 50%;
-}
-
-.overlay-panel p {
-  opacity: 0.95;
-  font-size: 14px;
+  padding: 14px 0;
+  margin-top: 20px;
+  width: 100%;
   letter-spacing: 0.5px;
+  text-transform: capitalize; /* Don't uppercase blindly */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.overlay-panel h4 {
-  color: #3b2f5c;
+.auth-wrapper button:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.overlay-panel h2,
-h4,
-p,
-button {
-  margin: 20px 0;
+.auth-wrapper button:active {
+  transform: translateY(0);
 }
 
-.overlay-left {
-  transform: translateX(-20%);
+/* Secondary Button (Forgot Password) */
+.auth-wrapper button.forgot-btn {
+  background: none;
+  box-shadow: none;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+  padding: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: auto;
 }
 
-.container.right-panel-active .overlay-left {
-  transform: translateX(0);
+.auth-wrapper button.forgot-btn:hover {
+  background: none;
+  color: #60a5fa;
+  transform: none;
+  border: none;
+  box-shadow: none;
 }
 
-.overlay-right {
-  right: 0;
-}
-
+/* Password Toggle Icon */
 .password-wrapper {
   position: relative;
   width: 100%;
@@ -203,10 +141,39 @@ button {
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
+  font-size: 18px;
+  color: #94a3b8;
+  filter: grayscale(100%);
 }
 
-.form-container {
-  z-index: 1;
+.password-wrapper span:hover {
+  color: #f8fafc;
+}
+
+/* Toggle Link Text (for switching modes) */
+.toggle-text {
+  margin-top: 20px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.toggle-text span {
+  color: #60a5fa;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+.toggle-text span:hover {
+  text-decoration: underline;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                            Toast Notification Fix                          */
+/* -------------------------------------------------------------------------- */
+.Toastify__close-button {
+  align-self: flex-start !important;
+  margin-top: 6px !important;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -255,13 +222,21 @@ button {
   margin: 12px 0;
   border-radius: 8px;
   border: 1px solid var(--border-main);
+  background-color: #ffffff; /* Force white background */
+  color: #1e293b; /* Force dark text */
   font-size: 14px;
   transition: all 0.3s ease;
 }
 
+.auth-card input::placeholder {
+  color: #64748b; /* Ensure placeholder is visible (slate-500) */
+  opacity: 1; /* Firefox fix */
+}
+
 .auth-card input:focus {
   border-color: var(--accent);
-  background-color: var(--bg-surface);
+  background-color: #ffffff; /* Keep white on focus */
+  color: #1e293b; /* Keep text dark */
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
   outline: none;
 }

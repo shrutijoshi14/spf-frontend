@@ -1,7 +1,18 @@
-import { Shield, ShieldAlert, ShieldCheck, Trash2, UserCog } from 'lucide-react';
+import {
+  Ban,
+  CheckCircle,
+  Edit2,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
+  Trash2,
+  UserCog,
+  UserPlus,
+  X,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import Modal from '../../common/Modal'; // Assuming generic modal is available
+import Modal from '../../common/Modal';
 import { useAuth } from '../../context/AuthContext.jsx';
 import API from '../../utils/api';
 
@@ -14,6 +25,25 @@ const ManageUsers = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [roleModalOpen, setRoleModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+
+  // Create User State
+  const [newUser, setNewUser] = useState({
+    full_name: '',
+    email: '',
+    mobile: '',
+    password: '',
+    role: 'STAFF',
+  });
+
+  // Edit User State
+  const [editUserForm, setEditUserForm] = useState({
+    full_name: '',
+    email: '',
+    mobile: '',
+  });
 
   const fetchUsers = async () => {
     try {
@@ -56,13 +86,111 @@ const ManageUsers = () => {
     }
   };
 
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    try {
+      await API.post('/auth/signup', newUser);
+      toast.success('User created successfully 🎉');
+      setCreateModalOpen(false);
+      setNewUser({
+        full_name: '',
+        email: '',
+        mobile: '',
+        password: '',
+        role: 'STAFF',
+      });
+      fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to create user');
+    }
+  };
+
+  // ✅ HANDLERS FOR NEW FEATURES
+  const handleEditClick = (u) => {
+    setSelectedUser(u);
+    setEditUserForm({
+      full_name: u.full_name,
+      email: u.email,
+      mobile: u.mobile || '',
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    try {
+      await API.put(`/users/${selectedUser.user_id}`, editUserForm);
+      toast.success('User details updated');
+      setEditModalOpen(false);
+      fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Update failed');
+    }
+  };
+
+  const handleStatusToggle = async () => {
+    if (!selectedUser) return;
+    const newStatus = selectedUser.status === 'ACTIVE' ? 'DISABLED' : 'ACTIVE';
+    try {
+      await API.put(`/users/${selectedUser.user_id}/status`, { status: newStatus });
+      toast.success(`User ${newStatus === 'ACTIVE' ? 'activated' : 'disabled'}`);
+      setStatusModalOpen(false);
+      fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Status update failed');
+    }
+  };
+
   return (
     <div className="manage-users-page" style={{ padding: '24px' }}>
-      <div className="page-header" style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--text-main)' }}>
-          👥 Manage Users
-        </h2>
-        <p style={{ color: 'var(--text-muted)' }}>Control access and roles for your team</p>
+      <div
+        className="page-header"
+        style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between' }}
+      >
+        <div>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--text-main)' }}>
+            👥 Manage Users
+          </h2>
+          <p style={{ color: 'var(--text-muted)' }}>Control access, roles, and status</p>
+        </div>
+
+        {user?.role === 'SUPERADMIN' ? (
+          <button
+            onClick={() => setCreateModalOpen(true)}
+            style={{
+              padding: '10px 20px',
+              borderRadius: '8px',
+              border: 'none',
+              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+              color: 'white',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <UserPlus size={18} />
+            Create User
+          </button>
+        ) : (
+          <div
+            style={{
+              padding: '10px 16px',
+              backgroundColor: 'rgba(234, 179, 8, 0.1)',
+              color: '#fbbf24',
+              borderRadius: '8px',
+              border: '1px solid rgba(234, 179, 8, 0.2)',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <ShieldAlert size={16} />
+            You are logged in as <strong>{user?.role}</strong>. Management features are restricted.
+          </div>
+        )}
       </div>
 
       <div
@@ -71,7 +199,7 @@ const ManageUsers = () => {
           background: 'var(--bg-surface)',
           borderRadius: '16px',
           border: '1px solid var(--border-main)',
-          overflow: 'hidden',
+          overflowX: 'auto',
         }}
       >
         <table className="app-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -81,10 +209,13 @@ const ManageUsers = () => {
                 User
               </th>
               <th style={{ padding: '16px', textAlign: 'left', color: 'var(--text-muted)' }}>
-                Email
+                Contact
               </th>
               <th style={{ padding: '16px', textAlign: 'left', color: 'var(--text-muted)' }}>
                 Role
+              </th>
+              <th style={{ padding: '16px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                Status
               </th>
               <th style={{ padding: '16px', textAlign: 'right', color: 'var(--text-muted)' }}>
                 Actions
@@ -94,13 +225,13 @@ const ManageUsers = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="4" style={{ padding: '24px', textAlign: 'center' }}>
+                <td colSpan="5" style={{ padding: '24px', textAlign: 'center' }}>
                   Loading...
                 </td>
               </tr>
             ) : users.length === 0 ? (
               <tr>
-                <td colSpan="4" style={{ padding: '24px', textAlign: 'center' }}>
+                <td colSpan="5" style={{ padding: '24px', textAlign: 'center' }}>
                   No users found
                 </td>
               </tr>
@@ -110,7 +241,12 @@ const ManageUsers = () => {
                   <td style={{ padding: '16px', color: 'var(--text-main)', fontWeight: '500' }}>
                     {u.full_name} {u.user_id === user?.userId && '(You)'}
                   </td>
-                  <td style={{ padding: '16px', color: 'var(--text-muted)' }}>{u.email}</td>
+                  <td style={{ padding: '16px', color: 'var(--text-muted)' }}>
+                    <div>{u.email}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      {u.mobile || '-'}
+                    </div>
+                  </td>
                   <td style={{ padding: '16px' }}>
                     <span
                       style={{
@@ -145,8 +281,65 @@ const ManageUsers = () => {
                       {u.role}
                     </span>
                   </td>
+                  <td style={{ padding: '16px', textAlign: 'center' }}>
+                    <span
+                      style={{
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        fontSize: '11px',
+                        fontWeight: '700',
+                        color: u.status === 'ACTIVE' ? '#10b981' : '#ef4444',
+                        background:
+                          u.status === 'ACTIVE'
+                            ? 'rgba(16, 185, 129, 0.1)'
+                            : 'rgba(239, 68, 68, 0.1)',
+                      }}
+                    >
+                      {u.status || 'ACTIVE'}
+                    </span>
+                  </td>
                   <td style={{ padding: '16px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                      {/* EDIT BUTTON */}
+                      <button
+                        className="icon-btn"
+                        onClick={() => handleEditClick(u)}
+                        title="Edit User"
+                        disabled={user?.role !== 'SUPERADMIN' && u.user_id !== user?.userId}
+                        style={{
+                          padding: '8px',
+                          borderRadius: '8px',
+                          border: '1px solid var(--border-main)',
+                          background: 'transparent',
+                          cursor: 'pointer',
+                          color: '#3b82f6',
+                        }}
+                      >
+                        <Edit2 size={16} />
+                      </button>
+
+                      {/* TOGGLE STATUS BUTTON */}
+                      <button
+                        className="icon-btn"
+                        onClick={() => {
+                          setSelectedUser(u);
+                          setStatusModalOpen(true);
+                        }}
+                        title={u.status === 'ACTIVE' ? 'Disable User' : 'Enable User'}
+                        disabled={u.role === 'SUPERADMIN' || user?.role !== 'SUPERADMIN'}
+                        style={{
+                          padding: '8px',
+                          borderRadius: '8px',
+                          border: '1px solid var(--border-main)',
+                          background: 'transparent',
+                          cursor: 'pointer',
+                          color: u.status === 'ACTIVE' ? '#f59e0b' : '#10b981',
+                        }}
+                      >
+                        {u.status === 'ACTIVE' ? <Ban size={16} /> : <CheckCircle size={16} />}
+                      </button>
+
+                      {/* ROLE BUTTON */}
                       <button
                         className="icon-btn"
                         onClick={() => {
@@ -166,6 +359,8 @@ const ManageUsers = () => {
                       >
                         <UserCog size={16} />
                       </button>
+
+                      {/* DELETE BUTTON */}
                       <button
                         className="icon-btn"
                         onClick={() => {
@@ -193,6 +388,169 @@ const ManageUsers = () => {
           </tbody>
         </table>
       </div>
+
+      {/* --------------------- MODALS --------------------- */}
+
+      {/* Edit User Modal */}
+      <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)}>
+        <div style={{ padding: '24px' }}>
+          <h3 style={{ marginBottom: '16px', color: 'var(--text-main)' }}>Edit User Details</h3>
+          <form
+            onSubmit={handleUpdateUser}
+            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+          >
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '6px',
+                  fontSize: '14px',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                required
+                value={editUserForm.full_name}
+                onChange={(e) => setEditUserForm({ ...editUserForm, full_name: e.target.value })}
+                className="modal-input"
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-main)',
+                  background: 'var(--input-bg)',
+                  color: 'var(--text-main)',
+                }}
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '6px',
+                  fontSize: '14px',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                required
+                value={editUserForm.email}
+                onChange={(e) => setEditUserForm({ ...editUserForm, email: e.target.value })}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-main)',
+                  background: 'var(--input-bg)',
+                  color: 'var(--text-main)',
+                }}
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '6px',
+                  fontSize: '14px',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                Mobile
+              </label>
+              <input
+                type="text"
+                value={editUserForm.mobile}
+                onChange={(e) => setEditUserForm({ ...editUserForm, mobile: e.target.value })}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-main)',
+                  background: 'var(--input-bg)',
+                  color: 'var(--text-main)',
+                }}
+              />
+            </div>
+            <button
+              type="submit"
+              style={{
+                marginTop: '10px',
+                width: '100%',
+                padding: '12px',
+                borderRadius: '8px',
+                border: 'none',
+                background: '#3b82f6',
+                color: 'white',
+                fontWeight: '600',
+                cursor: 'pointer',
+              }}
+            >
+              Save Changes
+            </button>
+          </form>
+        </div>
+      </Modal>
+
+      {/* Status Toggle Modal */}
+      <Modal open={statusModalOpen} onClose={() => setStatusModalOpen(false)}>
+        <div style={{ padding: '24px', textAlign: 'center' }}>
+          <div
+            style={{
+              width: '50px',
+              height: '50px',
+              borderRadius: '50%',
+              background: selectedUser?.status === 'ACTIVE' ? '#fee2e2' : '#dcfce7',
+              color: selectedUser?.status === 'ACTIVE' ? '#ef4444' : '#10b981',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px',
+            }}
+          >
+            {selectedUser?.status === 'ACTIVE' ? <Ban size={24} /> : <CheckCircle size={24} />}
+          </div>
+          <h3>{selectedUser?.status === 'ACTIVE' ? 'Disable User?' : 'Activate User?'}</h3>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
+            Are you sure you want to {selectedUser?.status === 'ACTIVE' ? 'disable' : 'activate'}{' '}
+            <strong>{selectedUser?.full_name}</strong>?
+            {selectedUser?.status === 'ACTIVE' && ' They will be unable to login.'}
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <button
+              onClick={() => setStatusModalOpen(false)}
+              style={{
+                padding: '10px 24px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-main)',
+                background: 'transparent',
+                cursor: 'pointer',
+                color: 'var(--text-main)',
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleStatusToggle}
+              style={{
+                padding: '10px 24px',
+                borderRadius: '8px',
+                border: 'none',
+                background: selectedUser?.status === 'ACTIVE' ? '#ef4444' : '#10b981',
+                color: 'white',
+                cursor: 'pointer',
+              }}
+            >
+              {selectedUser?.status === 'ACTIVE' ? 'Disable' : 'Activate'}
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Role Manager Modal */}
       <Modal open={roleModalOpen} onClose={() => setRoleModalOpen(false)}>
@@ -350,6 +708,213 @@ const ManageUsers = () => {
               Delete User
             </button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Create User Modal */}
+      <Modal open={createModalOpen} onClose={() => setCreateModalOpen(false)}>
+        <div style={{ padding: '24px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '24px',
+            }}
+          >
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--text-main)' }}>
+              Add New User
+            </h3>
+            <button
+              onClick={() => setCreateModalOpen(false)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              <X size={20} color="var(--text-muted)" />
+            </button>
+          </div>
+
+          <form
+            onSubmit={handleCreateUser}
+            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+          >
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '6px',
+                  fontSize: '14px',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                Full Name
+              </label>
+              <input
+                type="text"
+                required
+                value={newUser.full_name}
+                onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-main)',
+                  background: 'var(--input-bg)',
+                  color: 'var(--text-main)',
+                }}
+              />
+            </div>
+
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '6px',
+                  fontSize: '14px',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                required
+                value={newUser.email}
+                onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-main)',
+                  background: 'var(--input-bg)',
+                  color: 'var(--text-main)',
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    marginBottom: '6px',
+                    fontSize: '14px',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  Mobile
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newUser.mobile}
+                  onChange={(e) => setNewUser({ ...newUser, mobile: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border-main)',
+                    background: 'var(--input-bg)',
+                    color: 'var(--text-main)',
+                  }}
+                />
+              </div>
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    marginBottom: '6px',
+                    fontSize: '14px',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  Role
+                </label>
+                <select
+                  value={newUser.role}
+                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border-main)',
+                    background: 'var(--input-bg)',
+                    color: 'var(--text-main)',
+                    height: '46px', // match input height roughly
+                  }}
+                >
+                  <option value="STAFF">Staff</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="SUPERADMIN">SuperAdmin</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '6px',
+                  fontSize: '14px',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                required
+                value={newUser.password}
+                onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-main)',
+                  background: 'var(--input-bg)',
+                  color: 'var(--text-main)',
+                }}
+              />
+            </div>
+
+            <div
+              style={{
+                marginTop: '24px',
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'flex-end',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setCreateModalOpen(false)}
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-main)',
+                  background: 'transparent',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                  color: 'white',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                }}
+              >
+                Create User
+              </button>
+            </div>
+          </form>
         </div>
       </Modal>
     </div>

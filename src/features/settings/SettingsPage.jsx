@@ -1,13 +1,12 @@
 import { Database, FileText, Moon, Save, Settings, Sun, Trash2, Users } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
-import ConfirmationModal from '../../common/ConfirmationModal';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useTheme } from '../../context/ThemeContext';
 import '../../styles/modal.css';
 import API from '../../utils/api';
-import { formatDateTime } from '../../utils/dateUtils';
 import TrashManager from './components/TrashManager';
+import ManageUsers from './ManageUsers.jsx';
 import './settings.css';
 
 const SettingsPage = () => {
@@ -19,12 +18,6 @@ const SettingsPage = () => {
     penalty_days: '5',
     theme: theme,
   });
-
-  // User Management State
-  const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [roleModalOpen, setRoleModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // RBAC State
   const [permissions, setPermissions] = useState([]);
@@ -51,18 +44,6 @@ const SettingsPage = () => {
     }
   };
 
-  const fetchUsers = async () => {
-    if (!isAdmin) return;
-    try {
-      const res = await API.get('/users');
-      if (res.data.success) {
-        setUsers(res.data.data);
-      }
-    } catch (err) {
-      console.error('Failed to fetch users', err);
-    }
-  };
-
   const fetchPermissions = async () => {
     if (!isAdmin) return;
     try {
@@ -76,66 +57,8 @@ const SettingsPage = () => {
   };
 
   useEffect(() => {
-    fetchUsers();
     fetchPermissions();
   }, [isAdmin]);
-
-  const handleStatusUpdate = async (userId, newStatus) => {
-    try {
-      // Optimistic/Immediate update
-      setUsers((prev) => prev.map((u) => (u.user_id === userId ? { ...u, status: newStatus } : u)));
-
-      await API.put(`/users/${userId}/status`, { status: newStatus });
-      toast.success(`User set to ${newStatus}`);
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Status update failed');
-      fetchUsers(); // Rollback
-    }
-  };
-
-  const handleRoleUpdate = async (newRole, userOverride) => {
-    const userToUpdate = userOverride || selectedUser;
-    if (!userToUpdate) return;
-    try {
-      // Immediate update and re-sort
-      setUsers((prev) => {
-        const priority = { SUPERADMIN: 1, ADMIN: 2, STAFF: 3 };
-        const updated = prev.map((u) =>
-          u.user_id === userToUpdate.user_id ? { ...u, role: newRole } : u
-        );
-        return [...updated].sort((a, b) => {
-          if (priority[a.role] !== priority[b.role]) {
-            return priority[a.role] - priority[b.role];
-          }
-          return new Date(b.created_at) - new Date(a.created_at);
-        });
-      });
-
-      await API.put(`/users/${userToUpdate.user_id}/role`, { role: newRole });
-      toast.success(`Role updated to ${newRole}`);
-      setRoleModalOpen(false);
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Update failed');
-      fetchUsers(); // Rollback
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!selectedUser) return;
-    const userIdToDelete = selectedUser.user_id;
-
-    try {
-      // Immediate removal
-      setUsers((prev) => prev.filter((u) => u.user_id !== userIdToDelete));
-      setDeleteModalOpen(false);
-
-      await API.delete(`/users/${userIdToDelete}`);
-      toast.success('User deleted');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Delete failed');
-      fetchUsers(); // Rollback/Restore
-    }
-  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -406,200 +329,11 @@ const SettingsPage = () => {
 
         {/* User Management (RBAC Controlled) */}
         {hasPermission('users.view') && (
-          <div className="settings-card full-width card-users" style={{ gridColumn: '1 / -1' }}>
-            <div className="card-header">
-              <div
-                className="card-icon-box security"
-                style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}
-              >
-                <Users size={20} />
-              </div>
-              <div className="card-header-text">
-                <h3>User Management</h3>
-                <p>Control access, roles, and account status</p>
-              </div>
-            </div>
-
-            <div className="card-body" style={{ padding: 0 }}>
-              <div
-                className="table-scroll-container"
-                style={{
-                  maxHeight: '400px',
-                  overflow: 'auto',
-                  border: '1.5px solid var(--border-main)',
-                  borderRadius: '12px',
-                }}
-              >
-                <table className="app-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead
-                    style={{
-                      background: 'var(--bg-secondary)',
-                      position: 'sticky',
-                      top: 0,
-                      zIndex: 10,
-                    }}
-                  >
-                    <tr>
-                      <th
-                        style={{
-                          padding: '16px',
-                          textAlign: 'center',
-                          color: 'var(--text-muted)',
-                          width: '60px',
-                        }}
-                      >
-                        Sr. No.
-                      </th>
-                      <th
-                        style={{ padding: '16px', textAlign: 'center', color: 'var(--text-muted)' }}
-                      >
-                        User
-                      </th>
-                      <th
-                        style={{
-                          padding: '16px',
-                          textAlign: 'center',
-                          color: 'var(--text-muted)',
-                          width: '160px',
-                        }}
-                      >
-                        Role
-                      </th>
-                      <th
-                        style={{ padding: '16px', textAlign: 'center', color: 'var(--text-muted)' }}
-                      >
-                        Status
-                      </th>
-                      <th
-                        style={{ padding: '16px', textAlign: 'center', color: 'var(--text-muted)' }}
-                      >
-                        Last Login
-                      </th>
-                      <th
-                        style={{ padding: '16px', textAlign: 'center', color: 'var(--text-muted)' }}
-                      >
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map((u, index) => (
-                      <tr key={u.user_id} style={{ borderBottom: '1px solid var(--border-main)' }}>
-                        <td
-                          style={{
-                            padding: '16px',
-                            textAlign: 'center',
-                            fontWeight: '600',
-                            color: 'var(--text-muted)',
-                          }}
-                        >
-                          {index + 1}
-                        </td>
-                        <td style={{ padding: '16px', textAlign: 'center' }}>
-                          <div style={{ fontWeight: '500', color: 'var(--text-main)' }}>
-                            {u.full_name} {u.user_id === currentUser?.userId && '(You)'}
-                          </div>
-                          <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-                            {u.email}
-                          </div>
-                        </td>
-                        <td style={{ padding: '16px', textAlign: 'center' }}>
-                          <select
-                            className="role-select"
-                            value={u.role}
-                            onChange={(e) => {
-                              setSelectedUser(u);
-                              handleRoleUpdate(e.target.value, u);
-                            }}
-                            disabled={
-                              (u.role === 'SUPERADMIN' && u.user_id !== currentUser?.userId) ||
-                              !hasPermission('users.manage_role')
-                            }
-                            style={{
-                              padding: '6px 10px',
-                              borderRadius: '8px',
-                              border: '1px solid var(--border-main)',
-                              background: 'var(--bg-surface)',
-                              color: 'var(--text-main)',
-                              fontSize: '13px',
-                              cursor: 'pointer',
-                              width: '100%',
-                              textAlign: 'center',
-                            }}
-                          >
-                            <option value="SUPERADMIN">SuperAdmin</option>
-                            <option value="ADMIN">Admin</option>
-                            <option value="STAFF">Staff</option>
-                          </select>
-                        </td>
-                        <td style={{ padding: '16px', textAlign: 'center' }}>
-                          <label className="switch" style={{ transform: 'scale(0.8)' }}>
-                            <input
-                              type="checkbox"
-                              checked={u.status === 'ACTIVE'}
-                              onChange={() =>
-                                handleStatusUpdate(
-                                  u.user_id,
-                                  u.status === 'ACTIVE' ? 'DISABLED' : 'ACTIVE'
-                                )
-                              }
-                              disabled={
-                                u.role === 'SUPERADMIN' || !hasPermission('users.manage_status')
-                              }
-                            />
-                            <span className="slider round"></span>
-                          </label>
-                          <div
-                            style={{
-                              fontSize: '13px',
-                              color: u.status === 'ACTIVE' ? '#10b981' : '#ef4444',
-                              marginTop: '4px',
-                            }}
-                          >
-                            {u.status}
-                          </div>
-                        </td>
-                        <td
-                          style={{
-                            padding: '16px',
-                            color: 'var(--text-muted)',
-                            fontSize: '13px',
-                            textAlign: 'center',
-                          }}
-                        >
-                          {formatDateTime(u.last_login)}
-                        </td>
-                        <td style={{ padding: '16px', textAlign: 'center' }}>
-                          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                            {hasPermission('users.delete') && (
-                              <button
-                                onClick={() => {
-                                  setSelectedUser(u);
-                                  setDeleteModalOpen(true);
-                                }}
-                                disabled={u.role === 'SUPERADMIN'}
-                                style={{
-                                  padding: '8px',
-                                  borderRadius: '8px',
-                                  border: 'none',
-                                  background: 'transparent',
-                                  cursor: 'pointer',
-                                  color: '#ef4444',
-                                  transition: 'all 0.2s',
-                                }}
-                                className="delete-user-btn"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div
+            className="settings-card full-width card-users"
+            style={{ gridColumn: '1 / -1', padding: 0, overflow: 'hidden' }}
+          >
+            <ManageUsers />
           </div>
         )}
 
@@ -869,53 +603,6 @@ const SettingsPage = () => {
           </div>
         </div>
       )}
-
-      {/* Role Manager Modal */}
-      {roleModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ width: '400px' }}>
-            <div className="modal-header">
-              <h3>Change Role for {selectedUser?.full_name}</h3>
-              <button className="close-btn" onClick={() => setRoleModalOpen(false)}>
-                ×
-              </button>
-            </div>
-            <div className="modal-body">
-              <div style={{ display: 'grid', gap: '12px' }}>
-                <button
-                  onClick={() => handleRoleUpdate('ADMIN')}
-                  className="primary-btn"
-                  style={{
-                    background: '#10b981',
-                    borderColor: '#10b981',
-                    justifyContent: 'center',
-                  }}
-                >
-                  Make Admin
-                </button>
-                <button
-                  onClick={() => handleRoleUpdate('STAFF')}
-                  className="secondary-btn"
-                  style={{ justifyContent: 'center' }}
-                >
-                  Make Staff
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      <ConfirmationModal
-        open={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={handleDelete}
-        title="Delete User?"
-        message={`Are you sure you want to remove ${selectedUser?.full_name}? This action cannot be undone.`}
-        confirmText="Delete User"
-        variant="danger"
-      />
     </div>
   );
 };
